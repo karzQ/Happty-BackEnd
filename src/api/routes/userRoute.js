@@ -51,6 +51,3 @@ module.exports = (server) => {
             .post(userController.login_user);
 }
 
-
-
-

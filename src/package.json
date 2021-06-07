@@ -12,7 +12,8 @@
     "mongoose": "5.11.15",
     "swagger-jsdoc": "^7.0.0-rc.5",
     "swagger-ui-express": "^4.1.6",
-    "validator": "^13.5.2"
+    "validator": "^13.5.2",
+    "mongoose-unique-validator": "^2.0.3"
   },
   "scripts": {
     "start": "nodemon index.js"
