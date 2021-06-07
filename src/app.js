@@ -37,6 +37,9 @@ mongoose
   .connect(remote_uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log(`Connected on ${port} port !`);
+    console.log(`----`);
+    console.log(`If needed, you'll find Swagger-UI API Docs at this url :`)
+    console.log(`http://localhost:4000/api-docs/#/`)
   })
   .catch((err) => {
     console.log("Not Connected to Database ERROR! ", err);
