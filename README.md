@@ -17,6 +17,8 @@
 
 ## Install & Init
 
+__TO READ THIS BEFORE__ : You'll need to use NodeJS version `14.15.0`
+
 Go to the `src` folder.
 Use the following command : `npm install` or `yarn install`.
 
@@ -32,19 +34,16 @@ Add the values, stored on Discord server.
 * /login (**POST**)
 * /users (**GET**, **POST**)
 * /users/:userId (**GET**, **PUT**, **DELETE**)
-* /users/pseudo/:pseudo (**GET**)
 
 #### Party
 
 * /parties (**GET**, **POST**)
 * /parties/:partiesId (**GET**, **PUT**, **DELETE**)
-* /users/pseudo/:pseudo (**GET**)
 
 #### Notification
 
 * /notifications/:userId (**GET**, **POST**)
 * /notifications/users/:userId/:notificationsId (**GET**, **PUT**, **DELETE**)
-* /users/pseudo/:pseudo (**GET**)
 
 ## VS Code extensions
 
