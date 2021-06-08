@@ -52,7 +52,7 @@
         },
         "responses": {
           "202": {
-            "description": "Successfully logged in",
+            "description": "Logged-in",
             "content": {
               "application/json": {
                 "schema": {
@@ -62,7 +62,7 @@
             }
           },
           "401": {
-            "description": "User not exist",
+            "description": "Email/Password not working",
             "content": {
               "application/json": {
                 "schema": {
@@ -71,8 +71,18 @@
               }
             }
           },
+          "404": {
+            "description": "Email not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404"
+                }
+              }
+            }
+          },
           "500": {
-            "description": "Server internal error",
+            "description": "Server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -104,7 +114,7 @@
             }
           },
           "500": {
-            "description": "A server error has occured",
+            "description": "Server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -123,18 +133,18 @@
         "description": "Add an user",
         "operationId": "addUser",
         "requestBody": {
-          "description": "Party object to create",
+          "description": "User object to create",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Party"
+                "$ref": "#/components/schemas/User"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "User successfuly created",
+            "description": "User created",
             "content": {
               "application/json": {
                 "schema": {
@@ -144,7 +154,7 @@
             }
           },
           "400": {
-            "description": "An error has occured",
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -154,11 +164,21 @@
             }
           },
           "409": {
-            "description": "This user already exists",
+            "description": "User already exists",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/inline_response_409"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500_2"
                 }
               }
             }
@@ -189,21 +209,31 @@
         ],
         "responses": {
           "200": {
-            "description": "Results found",
+            "description": "User found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/inline_response_200_1"
                 }
               }
             }
           },
           "404": {
-            "description": "Results not found",
+            "description": "User not found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_404"
+                  "$ref": "#/components/schemas/inline_response_404_1"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500_2"
                 }
               }
             }
@@ -230,15 +260,46 @@
             }
           }
         ],
+        "requestBody": {
+          "description": "Just add one or more properties you'll need to modify.\n",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/body_1"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
-            "description": "User successfully modified"
+            "description": "User modified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_201_1"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Results not found"
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_1"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server internal error"
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500_2"
+                }
+              }
+            }
           }
         }
       },
@@ -247,7 +308,7 @@
           "users"
         ],
         "summary": "Delete an user",
-        "description": "Delete an user specified by `userId` path parameter.\n",
+        "description": "Delete the user specified by `userId` path parameter.\n",
         "operationId": "DeleteUser",
         "parameters": [
           {
@@ -264,13 +325,34 @@
         ],
         "responses": {
           "201": {
-            "description": "User successfully deleted"
+            "description": "User deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_201_2"
+                }
+              }
+            }
           },
           "404": {
-            "description": "User not found"
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_2"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server internal error"
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500_2"
+                }
+              }
+            }
           }
         }
       }
@@ -289,17 +371,76 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Party"
+                  "$ref": "#/components/schemas/inline_response_200_2"
                 }
               }
             }
           },
           "404": {
-            "description": "Results not found",
+            "description": "Parties not found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_404_1"
+                  "$ref": "#/components/schemas/inline_response_404_3"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "parties"
+        ],
+        "summary": "Create party",
+        "description": "Add a party",
+        "operationId": "addParty",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Party"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Party created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_201_3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "This party already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_409_1"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500_2"
                 }
               }
             }
@@ -330,10 +471,34 @@
         ],
         "responses": {
           "200": {
-            "description": "Results found"
+            "description": "Results found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_3"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Party not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_4"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server internal error"
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500_2"
+                }
+              }
+            }
           }
         }
       },
@@ -342,7 +507,7 @@
           "parties"
         ],
         "summary": "Modify a pary",
-        "description": "Modify an user specified by `userId` path parameter.\n",
+        "description": "Modify an party specified by `partyId` path parameter.\n",
         "operationId": "ModifiyParty",
         "parameters": [
           {
@@ -357,57 +522,46 @@
             }
           }
         ],
-        "responses": {
-          "201": {
-            "description": "Party successfully modified"
-          },
-          "404": {
-            "description": "Party not found"
-          },
-          "500": {
-            "description": "Server internal error"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "parties"
-        ],
-        "summary": "Add a party",
-        "description": "Add a party",
-        "operationId": "addParty",
-        "parameters": [
-          {
-            "name": "partyId",
-            "in": "path",
-            "description": "Do operation(s) due to the specified `partyId` path parameter.",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
-          "description": "Party object to create",
+          "description": "Just add one or more properties you'll need to modify.\n",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Party"
+                "$ref": "#/components/schemas/body_2"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Party successfuly created"
+            "description": "Party modified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_201_4"
+                }
+              }
+            }
           },
-          "400": {
-            "description": "An error has occured"
+          "404": {
+            "description": "Party not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_4"
+                }
+              }
+            }
           },
-          "409": {
-            "description": "This party already exists"
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500_2"
+                }
+              }
+            }
           }
         }
       },
@@ -433,13 +587,34 @@
         ],
         "responses": {
           "201": {
-            "description": "Party successfully deleted"
+            "description": "Party deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_201_5"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Party not found"
+            "description": "Party not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_4"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server internal error"
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500_2"
+                }
+              }
+            }
           }
         }
       }
@@ -483,7 +658,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_404_1"
+                  "$ref": "#/components/schemas/inline_response_404_5"
                 }
               }
             }
@@ -744,6 +919,19 @@
           }
         }
       },
+      "inline_response_404": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 401
+          },
+          "message": {
+            "type": "string",
+            "example": "Email not exist"
+          }
+        }
+      },
       "inline_response_500": {
         "type": "object",
         "properties": {
@@ -781,7 +969,7 @@
           },
           "message": {
             "type": "string",
-            "example": "No results found"
+            "example": "Server internal error"
           },
           "users": {
             "type": "array",
@@ -807,6 +995,10 @@
           "code": {
             "type": "integer",
             "example": 400
+          },
+          "message": {
+            "type": "string",
+            "example": "An error has occured"
           }
         }
       },
@@ -816,26 +1008,235 @@
           "code": {
             "type": "integer",
             "example": 409
+          },
+          "message": {
+            "type": "string",
+            "example": "This user already exists"
           }
         }
       },
-      "inline_response_404": {
+      "inline_response_500_2": {
         "type": "object",
         "properties": {
+          "code": {
+            "type": "integer",
+            "example": 500
+          },
           "message": {
             "type": "string",
-            "example": "No results found"
+            "example": "Server interal error"
+          }
+        }
+      },
+      "inline_response_200_1": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 200
           },
-          "users": {
-            "type": "array",
-            "example": [],
-            "items": {
-              "$ref": "#/components/schemas/User"
-            }
+          "user": {
+            "$ref": "#/components/schemas/User"
           }
         }
       },
       "inline_response_404_1": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 404
+          },
+          "message": {
+            "type": "string",
+            "example": "User not found"
+          }
+        }
+      },
+      "body_1": {
+        "type": "object",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/User"
+          }
+        ]
+      },
+      "inline_response_201_1": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 201
+          },
+          "message": {
+            "type": "string",
+            "example": "User successfully modified"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      },
+      "inline_response_201_2": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 201
+          },
+          "message": {
+            "type": "string",
+            "example": "User successfully deleted"
+          }
+        }
+      },
+      "inline_response_404_2": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 404
+          },
+          "message": {
+            "type": "string",
+            "example": "User not found"
+          },
+          "users": {
+            "type": "string"
+          }
+        }
+      },
+      "inline_response_200_2": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "Parties found"
+          },
+          "parties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Party"
+            }
+          }
+        }
+      },
+      "inline_response_404_3": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 404
+          },
+          "message": {
+            "type": "string",
+            "example": "Parties not found"
+          }
+        }
+      },
+      "inline_response_201_3": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 201
+          },
+          "message": {
+            "type": "string",
+            "example": "User successfully created"
+          },
+          "party": {
+            "$ref": "#/components/schemas/Party"
+          }
+        }
+      },
+      "inline_response_409_1": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 409
+          },
+          "message": {
+            "type": "string",
+            "example": "This party already exists"
+          }
+        }
+      },
+      "inline_response_200_3": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "Party found"
+          },
+          "parties": {
+            "$ref": "#/components/schemas/Party"
+          }
+        }
+      },
+      "inline_response_404_4": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 404
+          },
+          "message": {
+            "type": "string",
+            "example": "Party not found"
+          }
+        }
+      },
+      "body_2": {
+        "type": "object",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Party"
+          }
+        ]
+      },
+      "inline_response_201_4": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 201
+          },
+          "message": {
+            "type": "string",
+            "example": "Party successfully modified"
+          },
+          "party": {
+            "$ref": "#/components/schemas/Party"
+          }
+        }
+      },
+      "inline_response_201_5": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 201
+          },
+          "message": {
+            "type": "string",
+            "example": "Party successfully deleted"
+          },
+          "party": {
+            "$ref": "#/components/schemas/Party"
+          }
+        }
+      },
+      "inline_response_404_5": {
         "type": "object",
         "properties": {
           "message": {
