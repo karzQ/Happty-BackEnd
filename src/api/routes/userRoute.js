@@ -13,10 +13,6 @@ module.exports = (server) => {
             .delete(userController.delete_user);
 
     server
-        .route("/users/pseudo/:pseudo")
-            .get(userController.get_user_by_pseudo);
-
-    server
         .route("/login")
             .post(userController.login_user);
 }

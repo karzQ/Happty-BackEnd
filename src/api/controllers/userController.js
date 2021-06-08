@@ -29,7 +29,8 @@ exports.get_all_users = async (req, res) => {
                         age: user.age,
                         phone: user.phone,
                         notifications: user.notifications,
-                        profilePicturePath: user.profilePicturePath
+                        profilePicturePath: user.profilePicturePath,
+                        uniqueCode: uniqueCode
                     }
                     newUserArr.push({...newObjUser});
                 });
@@ -53,22 +54,35 @@ exports.get_all_users = async (req, res) => {
 
 exports.get_user_by_id = async (req, res) => {
     let statusCode = 200;
+    const {userId} = req.params.userId;
+    let error;
+
     try {
-        User.find({_id: req.params.id}, (err, user) => {
+        User.findOne({_id: userId}, (err, user) => {
             if (err) {
-                statusCode = 500
-                throw "User not found."
-            } else {
+                statusCode = 500;
+
+                error = new Error("Server internal error")
+                throw error;
+
+            } else if (user) {
+                
                 console.log("User exist")
+                console.log({user});
                 res.status(statusCode)
                 .json({
                     code: statusCode,
                     message: "User found",
                     user
                 })
+            } else {
+                statusCode = 404;
+                error = new Error("User not found")
+                throw error;
             }
         })
     } catch (err) {
+        console.log({err});
         console.log("User not exist")
         res.json({
             code: statusCode,
@@ -100,7 +114,7 @@ exports.create_new_user = async (req, res) => {
                             lastname: capitalize(lastname),
                             pseudo: formatPseudo(pseudo, await getDocumentsCount(User)),
                             age: age ?? 0,
-                            email,
+                            email: email.toLowerCase(),
                             password: hashedPassword, 
                             phone,
                             profilePicturePath: profilePicturePath ?? '',
@@ -245,7 +259,7 @@ exports.login_user = async (req, res) => {
                             if (err) {
                                 console.log({err})
                                 statusCode = 500;
-                                throw "Internal server error";
+                                throw "Server internal error";
                             } else if (token) {
                                 console.log("Successfully logged")
                                 res.status(statusCode)
@@ -262,7 +276,7 @@ exports.login_user = async (req, res) => {
                         throw "The couple Email/Password is not working"
                     }
                 } else {
-                    statusCode = 400;
+                    statusCode = 404;
                     throw "Email not exist"
                 }
             });
@@ -278,8 +292,4 @@ exports.login_user = async (req, res) => {
             message: err
         })
     }
-}
-
-exports.get_user_by_pseudo = async (req, res) => {
-    
 }
