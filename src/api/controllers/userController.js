@@ -13,6 +13,7 @@ exports.get_all_users = async (req, res) => {
     try {
         User.find({}, (err, users) => {
             if (err) {
+                statusCode = 500;
                 throw 'Server internal error.';
             } else {
                 const newUserArr = [];
@@ -41,9 +42,9 @@ exports.get_all_users = async (req, res) => {
             }
         });
     } catch (err) {
-        res.status(500);
         console.log(err);
-        res.json({
+        res.status(statusCode)
+        .json({
             code: statusCode,
             message: err
         });
@@ -61,6 +62,7 @@ exports.get_user_by_id = async (req, res) => {
                 console.log("User exist")
                 res.status(statusCode)
                 .json({
+                    code: statusCode,
                     message: "User found",
                     user
                 })
@@ -69,6 +71,7 @@ exports.get_user_by_id = async (req, res) => {
     } catch (err) {
         console.log("User not exist")
         res.json({
+            code: statusCode,
             message: err
         })
     }
@@ -119,6 +122,7 @@ exports.create_new_user = async (req, res) => {
                                 delete createdUser.password;
                                 res.status(statusCode)
                                 .json({
+                                    code: statusCode,
                                     message: "User successfully created",
                                     user: createdUser
                                 })
@@ -136,6 +140,7 @@ exports.create_new_user = async (req, res) => {
         console.log("[Error]")
         res.status(statusCode)
         .json({
+            code: statusCode,
             message: err,
             user: null
         })
@@ -159,6 +164,7 @@ exports.update_user = async (req, res) => {
                 console.log("User successfully updated")
                 res.status(statusCode)
                 .json({
+                    code: statusCode,
                     message: `User ${updatedUser._id} has been successfully updated`,
                     user: updatedUser
                 });
@@ -172,6 +178,7 @@ exports.update_user = async (req, res) => {
         statusCode = 500;
         res.status(statusCode)
         .json({
+            code: statusCode,
             message: err,
             user: null
         });
@@ -194,6 +201,7 @@ exports.delete_user = async (req, res) => {
                     console.log("User deleted");
                     res.status(statusCode)
                     .json({
+                        code: statusCode,
                         message: "User successfully deleted",
                         user
                     })
@@ -202,6 +210,7 @@ exports.delete_user = async (req, res) => {
                     console.log("User not found");
                     res.status(statusCode)
                     .json({
+                        code: statusCode,
                         message: "User not found",
                         user: null
                     })
@@ -212,6 +221,7 @@ exports.delete_user = async (req, res) => {
         statusCode = 500;
         res.status(statusCode)
         .json({
+            code: statusCode,
             message: err,
             user: null
         })
@@ -219,7 +229,7 @@ exports.delete_user = async (req, res) => {
 }
 
 exports.login_user = async (req, res) => {
-    let statusCode = 200;
+    let statusCode = 202;
 
     try {
         const { email, password } = req.body;
@@ -227,6 +237,7 @@ exports.login_user = async (req, res) => {
         if (email && password) {
             User.findOne({email}, (err, user) => {
                 if (err) {
+                    statusCode = 401
                     throw "Invalid Email and/or password"
                 } else if (user) {
                     if (decryptPassword(req.body.password, user.password)) {
@@ -239,6 +250,8 @@ exports.login_user = async (req, res) => {
                                 console.log("Successfully logged")
                                 res.status(statusCode)
                                 .json({
+                                    code: statusCode,
+                                    message: "Successfully logged-in",
                                     token
                                 })
                             } else {
@@ -261,6 +274,7 @@ exports.login_user = async (req, res) => {
     } catch (err) {
         res.status(statusCode)
         .json({
+            code: statusCode,
             message: err
         })
     }

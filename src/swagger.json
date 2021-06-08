@@ -33,6 +33,57 @@
     }
   ],
   "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Login an user",
+        "description": "Login an user with credentials",
+        "operationId": "Login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successfully logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_202"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_401"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users": {
       "get": {
         "tags": [
@@ -47,7 +98,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/inline_response_200"
                 }
               }
             }
@@ -57,7 +108,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_500"
+                  "$ref": "#/components/schemas/inline_response_500_1"
                 }
               }
             }
@@ -83,13 +134,34 @@
         },
         "responses": {
           "201": {
-            "description": "User successfuly created"
+            "description": "User successfuly created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_201"
+                }
+              }
+            }
           },
           "400": {
-            "description": "An error has occured"
+            "description": "An error has occured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400"
+                }
+              }
+            }
           },
           "409": {
-            "description": "This user already exists"
+            "description": "This user already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_409"
+                }
+              }
+            }
           }
         }
       }
@@ -131,7 +203,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_500"
+                  "$ref": "#/components/schemas/inline_response_404"
                 }
               }
             }
@@ -227,7 +299,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_404"
+                  "$ref": "#/components/schemas/inline_response_404_1"
                 }
               }
             }
@@ -411,7 +483,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_404"
+                  "$ref": "#/components/schemas/inline_response_404_1"
                 }
               }
             }
@@ -629,7 +701,125 @@
           }
         }
       },
+      "body": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "toto@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "rootRoot12"
+          }
+        }
+      },
+      "inline_response_202": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 202
+          },
+          "message": {
+            "type": "string",
+            "example": "Successfully logged-in"
+          },
+          "token": {
+            "type": "string",
+            "example": "1erf5te16tr581t6re51tre1tze416t"
+          }
+        }
+      },
+      "inline_response_401": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 401
+          },
+          "message": {
+            "type": "string",
+            "example": "The couple Email/Password is not working"
+          }
+        }
+      },
       "inline_response_500": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 500
+          },
+          "message": {
+            "type": "string",
+            "example": "Server internal error"
+          }
+        }
+      },
+      "inline_response_200": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 200
+          },
+          "user": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "inline_response_500_1": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 500
+          },
+          "message": {
+            "type": "string",
+            "example": "No results found"
+          },
+          "users": {
+            "type": "array",
+            "example": [],
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "inline_response_201": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 201
+          }
+        }
+      },
+      "inline_response_400": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 400
+          }
+        }
+      },
+      "inline_response_409": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 409
+          }
+        }
+      },
+      "inline_response_404": {
         "type": "object",
         "properties": {
           "message": {
@@ -645,7 +835,7 @@
           }
         }
       },
-      "inline_response_404": {
+      "inline_response_404_1": {
         "type": "object",
         "properties": {
           "message": {
