@@ -16,12 +16,43 @@ exports.capitalize = (str) => {
  * @param {*} inputPassword The password set by the client
  * @param {*} dbPassword The encrypted password get through the Database. 
  */
-exports.decryptPassword = async (inputPassword, dbPassword) => {
-  bcrypt.compare(inputPassword, dbPassword, (err, result) => {
-    if (err || result === false) {
-      throw "Passwords not equals";
-    } else {
-      return result;
-    }
-  });
+exports.decryptPassword =  (inputPassword, dbPassword) => {
+  // bcrypt.compare(inputPassword, dbPassword, (err, result) => {
+  //   if (err || result === false) {
+  //     throw "Passwords not equals";
+  //   } else {
+  //     return result;
+  //   }
+  // });
+  return bcrypt.compareSync(inputPassword,dbPassword)
+}
+
+exports.getDocumentsCount = async (model) => {
+  console.log({model})
+  try {
+    let modelCount = 0;
+    await model.countDocuments({}, (err, count) => {
+      if (err) {
+        throw `An error has occurred while counting ${model.name} collection`;
+      } else {
+        if (count ===0) {
+          this.getDocumentsCount(model);
+        }
+        modelCount = count;
+      }
+    });
+    return modelCount;
+    
+  } catch(err) {
+    console.log(err);
+  }
+}
+
+exports.formatPseudo = (pseudo, usersCount) => {
+  console.log({usersCount})
+  let uniqueIdentifier = `${usersCount}`;
+  while (uniqueIdentifier.length < 6) {
+    uniqueIdentifier = "0" + uniqueIdentifier;
+  }
+  return `${pseudo}#${uniqueIdentifier}`;
 }

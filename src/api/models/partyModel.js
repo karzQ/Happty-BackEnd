@@ -8,6 +8,11 @@ const partySchema = new Schema({
         trim: true
     },
 
+    userId: {
+        type: Schema.ObjectId,
+        required: "UserId is required"
+    },
+
     date: {
         type: Date,
         required: "Date is required"
@@ -19,6 +24,13 @@ const partySchema = new Schema({
         required: "Location is required",
         trim: true
     },
+
+    description: {
+        type: String,
+        required: true,
+        trim: true
+    }
+
 
 });
 

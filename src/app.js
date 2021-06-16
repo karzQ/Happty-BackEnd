@@ -27,7 +27,6 @@ const DB_TABLE = process.env.DB_TABLE;
 const DB_USERNAME = process.env.DB_USERNAME;
 const DB_PASSWORD = process.env.DB_PASSWORD;
 const remote_uri = `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@clusterdb.usmas.azure.mongodb.net/${DB_TABLE}?retryWrites=true&w=majority`;
-
 /**
  * Connect Back-end application to MongoDB Database
  * DbName = "db-nodeproject"
@@ -37,6 +36,9 @@ mongoose
   .connect(remote_uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log(`Connected on ${port} port !`);
+    console.log(`----`);
+    console.log(`If needed, you'll find Swagger-UI API Docs at this url :`)
+    console.log(`http://localhost:4000/api-docs/#/`)
   })
   .catch((err) => {
     console.log("Not Connected to Database ERROR! ", err);
@@ -44,5 +46,10 @@ mongoose
 
 const userRoute = require("./api/routes/userRoute");
 userRoute(server);
+
+const partyRoute = require("./api/routes/partyRoute");
+partyRoute(server);
+
+
 
 server.listen(port, hostname);

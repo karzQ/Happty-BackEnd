@@ -1,5 +1,7 @@
+const {verify_token} = require("../middlewares/jwtMiddleware")
 module.exports = (server) => {
     const partyController = require("../controllers/partyController");
+    
 
      /**
      * Route to get all parties or create a new one.
@@ -8,6 +10,7 @@ module.exports = (server) => {
      * @param {string} path - Express path.
      * @param {Object} req.body - The JSON payload (for POST only).
      */ 
+    server.all("/parties",verify_token)
     server
         .route("/parties")
             .get(partyController.get_all_party)
