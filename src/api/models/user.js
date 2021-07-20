@@ -18,6 +18,48 @@ const userSchema = new Schema({
         required: 'An email is required',
         unique: true
     },
+    firstname: {
+        type: String,
+        required: "FirstName is required",
+        trim: true
+    },
+
+    lastname: {
+        type: String,
+        required: "LastName is required",
+        trim: true
+    },
+
+    pseudo: {
+        type: String,
+        required: 'Pseudo is required',
+        unique: true,
+        trim: true
+    },
+
+    age: {
+        type: Number
+    },
+
+    phone: {
+        type: String,
+        required: "Phone number is required",
+        unique: true,
+        trim: true
+    },
+
+    profilPicturePath: {
+        type: String,
+        trim: true
+    },
+
+    notifications: {
+        type: [Object],
+    },
+
+    uniqueCode: {
+        type: String,
+    }
 })
 
 userSchema.plugin(uniqueValidator, { message: "Error, expected \"{PATH}\" ({VALUE}) to be unique "});
