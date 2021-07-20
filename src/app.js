@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const app = express();
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+const {port, baseUrl: hostname} = require('./config');
 
 const options = {
     definition: {
@@ -12,9 +13,6 @@ const options = {
         info: {
             title: 'API',
             version: '1.0.0',
-        },
-        servers: {
-            url: 'http://localhost:4000'
         },
         tags: [
             {
@@ -36,7 +34,7 @@ const options = {
 
 const swaggerSpec = swaggerJsdoc(options);
 const setupOptions = {
-    explorerUrl: true
+  explorerUrl: true
 }
 
 app.use(express.json());
@@ -48,7 +46,6 @@ mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 
-const {port, baseUrl: hostname} = require('./config');
 const {DB_USERNAME, DB_PASSWORD, DB_TABLE} = process.env;
 const dbUrl = `mongodb://${DB_USERNAME}:${DB_PASSWORD}@cluster0-shard-00-00.5yp3u.mongodb.net:27017,cluster0-shard-00-01.5yp3u.mongodb.net:27017,cluster0-shard-00-02.5yp3u.mongodb.net:27017/${DB_TABLE}?ssl=true&replicaSet=atlas-k3o6xi-shard-0&authSource=admin&retryWrites=true&w=majority`;
 
@@ -56,22 +53,19 @@ mongoose
     .connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log(`Connected on ${port} port !`);
+        console.log(`You'll find SwaggerDoc at : http://localhost:4000/api-docs/#/`);
     })
     .catch((err) => {
         console.log("Not Connected to Database ERROR! ", err);
     });
 
 
-const animalRoutes = require('./routes/animalRoutes');
-animalRoutes(app);
 const userRoutes = require('./routes/userRoutes');
 userRoutes(app);
-const articleRoutes = require('./routes/articleRoutes');
-articleRoutes(app);
-const donationRoutes = require('./routes/donationRoutes');
-donationRoutes(app);
-const productRoutes = require('./routes/productRoutes');
-productRoutes(app);
+// const partyRoutes = require('./routes/partyRoutes');
+// userRoutes(app);
+// const notificationRoutes = require('./routes/notificationRoutes');
+// userRoutes(app);
 
 process.setMaxListeners(0);
 app.listen(port, hostname);
