@@ -1,14 +1,13 @@
 require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
 const server = express();
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 
-server.use(bodyParser.urlencoded({ extended: true }));
-server.use(bodyParser.json());
+server.use(express.urlencoded({ extended: true }));
+server.use(express.json());
 server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Config to avoid mongoose deprecations warnings

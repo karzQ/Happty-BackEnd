@@ -168,23 +168,31 @@ exports.update_user = async (req, res) => {
         const userId = req.params.userId;
 
         if (userId) {
-            const updatedUser = await User.findOneAndUpdate({_id: userId}, req.body, {
-                upsert: false,
-                new: true,
-                returnOriginal: false,
-            });
-
-            if (updatedUser) {
-                console.log("User successfully updated")
-                res.status(statusCode)
-                .json({
-                    code: statusCode,
-                    message: `User ${updatedUser._id} has been successfully updated`,
-                    user: updatedUser
-                });
-            } else {
-                throw "An error has occurred while updating user";
-            }
+            jwt.sign({email: user.email, role: 'user'}, JWT_TOKEN, {expiresIn: "1 hour"}, async (err, token) => {
+                if (err) {
+                    console.log({err});
+                    statusCode = 500;
+                    throw 'Server internal error';
+                } else if (token) {
+                    const updatedUser = await User.findOneAndUpdate({_id: userId}, req.body, {
+                        upsert: false,
+                        new: true,
+                        returnOriginal: false,
+                    });
+    
+                    if (updatedUser) {
+                        console.log("User successfully updated")
+                        res.status(statusCode)
+                        .json({
+                            code: statusCode,
+                            message: `User ${updatedUser._id} has been successfully updated`,
+                            user: updatedUser
+                        });
+                    } else {
+                        throw "An error has occurred while updating user";
+                    }
+                }
+            })
         } else {
             throw "Id is required ";
         }
