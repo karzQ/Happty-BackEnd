@@ -1,8 +1,23 @@
-const mongoose = require("mongoose");
-const uniqueValidator = require("mongoose-unique-validator");
+const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
+    role: {
+       type: String,
+       required: true,
+       trim: true
+    },
+    password: {
+        type: String,
+        required: 'A password is required',
+        trim: true
+    },
+    email: {
+        type: String,
+        required: 'An email is required',
+        unique: true
+    },
     firstname: {
         type: String,
         required: "FirstName is required",
@@ -19,18 +34,6 @@ const userSchema = new Schema({
         type: String,
         required: 'Pseudo is required',
         unique: true,
-        trim: true
-    },
-
-    email: {
-        type: String,
-        required: "Email is required",
-        unique: true
-    },
-
-    password: {
-        type: String,
-        required: "Password is required",
         trim: true
     },
 
@@ -57,12 +60,8 @@ const userSchema = new Schema({
     uniqueCode: {
         type: String,
     }
-});
+})
 
+userSchema.plugin(uniqueValidator, { message: "Error, expected \"{PATH}\" ({VALUE}) to be unique "});
 
-userSchema.plugin(uniqueValidator, {message: "Error, expected \"{PATH}\" ({VALUE}) to be unique"})
-
-/**
- * Send User object to User collection in MongoDB.
- */ 
- module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", userSchema);
