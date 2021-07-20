@@ -255,7 +255,7 @@ exports.login = (req, res) => {
                     statusCode = 404;
                     throw {type: 'email_not_exist'};
                 }
-            });
+            })
         } else {
             statusCode = 500;
             throw {type: 'fields_required'};
