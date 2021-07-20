@@ -1,127 +1,325 @@
 require('dotenv').config();
-const validator = require('validator');
-const bcrypt = require('bcrypt');
-const User = require('../models/userModel');
+const User = require('../models/user');
+const jwt = require('jsonwebtoken');
+const JWT_TOKEN = process.env.JWT_TOKEN;
+const { port, baseUrl: hostname } = require('./../config');
+const {
+    json_response,
+    check_update,
+    check_get_one,
+    check_create_element
+} = require('../utils/utils');
 
-exports.get_all_users = async (req, res) => {
+exports.get_all_users = (req, res) => {
+    let statusCode = 200;
+
     try {
         User.find({}, (err, users) => {
             if (err) {
-                throw 'Server internal error.';
+                statusCode = 500;
+                throw {type: 'server_error'};
             } else {
-                console.log("Get all users : ", users);
-                /* const newUserArr = [];
+                const usersList = [];
 
-                users.forEach(user => {
+                users.forEach((user) => {
                     const newObjUser = {
-                        ...user,
-                        firstname: user.firstname,
-                        lastname: user.lastname,
-                        pseudo: user.pseudo,
+                        _id: user._id,
                         email: user.email,
                         password: user.password,
-                        age: user.age,
-                        phone: user.phone,
-                        notifications: user.notifications,
-                        profilePicturePath: user.profilePicturePath
-                    }
-                    newUserArr.push(newObjUser);
+                        link: `http://${hostname}:${port}/users/${user._id}`,
+                    };
+                    usersList.push({ ...newObjUser });
                 });
 
-                res.status(200);
-                res.json(newUserArr); */
+                const obj = {
+                    ...usersList,
+                    _options: {
+                        create: {
+                            method: 'POST',
+                            link: `http://${hostname}:${port}/users/create`,
+                            properties: {
+                                email: 'String',
+                                password: 'String',
+                                role: 'String',
+                            },
+                        },
+                    },
+                };
+                json_response(
+                    req,
+                    res,
+                    statusCode,
+                    {type: 'get_many', objName: 'user', value: usersList.length},
+                    obj
+                );
             }
         });
     } catch (err) {
-        res.status(500);
         console.log(err);
-        res.json({
-            message: err
-        });
+        json_response(req, res, statusCode, err, null, true);
     }
-}
+};
 
-
-exports.get_user_by_id = async (req, res) => {
-    try {
-        User.findById(req.params.userId, (err, user) => {
-            if (err) {
-                throw 'Server internal error.';
-            } else if (!user) {
-                throw 'Ressource not found.';
-            } else {
-                console.log("Get user by ID : ", user);
-            }
-        })
-    } catch(err) {
-        res.status(500);
-        res.json({
-            message: err
-        });
-    }
-}
-
-
-exports.create_new_user = async (req, res) => {
-    let statusCode = 201;
-
-    const { firstname, lastname, pseudo, age, email, password, phone, profilePicturePath, notifications, uniqueCode } = req.body;
-
-    // console.log(req.body)
+exports.get_one_user = (req, res) => {
+    let statusCode = 200;
+    let error;
 
     try {
-        if (firstname && lastname && pseudo && email && password && phone) {
-            const userObj = {
-                firstname,
-                lastname,
-                pseudo,
-                age: age ?? 0,
-                email,
-                password, 
-                phone,
-                profilePicturePath: profilePicturePath ?? '',
-                notifications: notifications ?? [],
-                uniqueCode: uniqueCode ?? ''
-            };
-
-            // L'opérateur ?? permet de tester si la valeur de gauche est "undefined" ou "null", et ainsi affecter la valeur de droite en fonction.
-            // const b = myObject?.a ?? 1; Assigne la key [a] si elle existe sinon b sera égal à 1
-
-            const newUser = new User(userObj);
-
-            newUser.save((err, user) => {
+        check_get_one(req, 'userId', () => {
+            User.findOne({ _id: req.params.userId }, (err, user) => {
                 if (err) {
                     statusCode = 500;
-                    throw err;
+                    throw {type: 'server_error'};
+                } else if (user) {
+                    const data = {
+                        ...user._doc,
+                        _options: {
+                            create: {
+                                method: 'POST',
+                                link: `http://${hostname}:${port}/users/create`,
+                                properties: {
+                                    email: 'String',
+                                    password: 'String',
+                                    role: 'String',
+                                },
+                            },
+                            update: {
+                                method: 'PUT',
+                                link: `http://${hostname}:${port}/users/${user._id}/update`,
+                                properties: {
+                                    email: 'String',
+                                    password: 'String',
+                                    role: 'String',
+                                },
+                            },
+                            delete: {
+                                method: 'DELETE',
+                                link: `http://${hostname}:${port}/users/${user._id}/delete`,
+                            },
+                        },
+                    };
+                    json_response(
+                        req,
+                        res,
+                        statusCode,
+                        {type: 'get_one', objName: 'User'},
+                        data
+                    );
                 } else {
-                    res.status(statusCode)
-                    .json(user);
-                    console.log("User successfully created !", user);
+                    statusCode = 404;
+                    throw {type: 'not_found', objName: 'User'}
+                }
+            });
+        });
+    } catch (err) {
+        json_response(req, res, statusCode, err, null, true);
+    }
+};
+
+exports.update_one_user = (req, res) => {
+    let statusCode = 200;
+
+    try {
+        check_update(req, 'userId', () => {
+            verify_token(req, res, false, async () => {
+                User.findOne({ _id: req.params.userId }, async (err, user) => {
+                    if (err) {
+                        statusCode = 500;
+                        throw {type: 'server_error'};
+                    } else if (user) {
+                        const updatedUser = {
+                            _id: user._id,
+                            email: req.body?.email ?? user.email,
+                            password: req.body?.password ?? user.password,
+                            role: req.body?.role ?? user.role,
+                        };
+                        await User.replaceOne(
+                            { _id: req.params.userId },
+                            { ...updatedUser }
+                        );
+
+                        const data = {
+                            beforeUpdate: {
+                                user,
+                            },
+                            afterUpdate: {
+                                updatedUser,
+                            },
+                            _options: {
+                                create: {
+                                    method: 'POST',
+                                    link: `http://${hostname}:${port}/users/create`,
+                                    properties: {
+                                        email: 'String',
+                                        password: 'String',
+                                        role: 'String',
+                                    },
+                                },
+                                update: {
+                                    method: 'PUT',
+                                    link: `http://${hostname}:${port}/users/${user._id}/update`,
+                                    properties: {
+                                        email: 'String',
+                                        password: 'String',
+                                        role: 'String',
+                                    },
+                                },
+                                delete: {
+                                    method: 'DELETE',
+                                    link: `http://${hostname}:${port}/users/${user._id}/delete`,
+                                },
+                            },
+                        };
+
+                        json_response(
+                            req,
+                            res,
+                            statusCode,
+                            {type: 'update'},
+                            data
+                        );
+                    } else {
+                        statusCode = 404;
+                        throw {type: 'not_found', objName: 'User'};
+                    }
+                });
+            });
+        });
+    } catch (err) {
+        json_response(req, res, statusCode, err, null, true);
+    }
+};
+
+exports.delete_one_user = (req, res) => {
+    let statusCode = 204;
+    const userId = req.params.userId;
+
+    try {
+        if (userId) {
+            verify_token(req, res, true, () => {
+                User.findOneAndDelete({_id: userId}, (err, user) => {
+                    if (err) {
+                        statusCode = 500;
+                        throw {type: 'server_error'};
+                    } else if (user) {
+                        json_response(req, res, statusCode, {type: 'success_delete'}, user);
+                    }
+                })
+            })
+        } else {
+            throw {type: 'id_required'};
+        }
+    } catch (err) {
+        json_response(req, res, statusCode, err, null, true);
+    }
+};
+
+exports.login = (req, res) => {
+    let statusCode = 202;
+
+    try {
+        const { email, password } = req.body;
+
+        if (email && password) {
+            User.findOne({ email }, (err, user) => {
+                if (err) {
+                    statusCode = 401;
+                    throw {type: 'email_pwd_couple_error'};
+                } else if (user) {
+                    if (req.body.password === user.password) {
+                        jwt.sign(
+                            { id: user._id, email: user.email, role: user.role },
+                            JWT_TOKEN,
+                            { expiresIn: '24 hours' },
+                            async (err, token) => {
+                                if (err) {
+                                    statusCode = 500;
+                                    throw {type: 'server_error'};
+                                } else if (token) {
+                                    const data = {
+                                        token,
+                                        role: user.role
+                                    }
+                                    json_response(req, res, statusCode, {type: 'success_login'}, data);
+                                } else {
+                                    statusCode = 400;
+                                    throw {type: 'error_occured'};
+                                }
+                            }
+                        );
+                    } else {
+                        statusCode = 400;
+                        throw {type: 'email_pwd_couple_error'};
+                    }
+                } else {
+                    statusCode = 404;
+                    throw {type: 'email_not_exist'};
                 }
             });
         } else {
-            throw 'All fields are required';
+            statusCode = 500;
+            throw {type: 'fields_required'};
         }
     } catch (err) {
-        res.status(statusCode);
-        res.json({
-            message: 'Server internal error ?'
-        });
+        json_response(req, res, statusCode, err, null, true);
     }
-}
+};
 
-exports.update_user = async (req, res) => {
-    
-}
+exports.signup = async (req, res) => {
+    let statusCode = 201;
+    const { role, email, password } = req.body;
+    try {
+        check_create_element(req, User, () => {
+            if (password === '' || password === null) {
+                statusCode = 400;
+                throw {type: 'password_required'}
+            } else {
+                User.findOne({ email }, async (err, user) => {
+                    if (err) {
+                        statusCode = 500;
+                        throw {type: 'server_error'};
+                    } else {
+                        const newUser = await new User({
+                            role,
+                            email: email.toLowerCase(),
+                            password,
+                        });
 
-exports.delete_user = async (req, res) => {
+                        await newUser.save((error, cUser) => {
+                            if (error) {
+                                statusCode = 500;
+                                json_response(req, res, statusCode, {type: 'server_error'}, null);
+                            } else {
+                                const createdUser = { ...cUser._doc };
+                                delete createdUser.password;
 
-}
-
-exports.get_user_by_pseudo = async (req, res) => {
-
-}
-
-exports.login_user = async (req, res) => {
-
-}
+                                const data = {
+                                    ...createdUser,
+                                    _options: {
+                                        login: {
+                                            method: 'POST',
+                                            link: `http://${hostname}:${port}/login`,
+                                            properties: {
+                                                email: {
+                                                    type: 'String',
+                                                },
+                                                password: {
+                                                    type: 'String'
+                                                }
+                                            },
+                                        },
+                                    },
+                                }
+                                
+                                json_response(req, res, statusCode, {type: 'success_create', objName: 'User'}, data);
+                            }
+                        });
+                    }
+                });
+            }
+        })
+    } catch (err) {
+        statusCode = 500;
+        json_response(req, res, statusCode, 'POST', err, null, true);
+    }
+};

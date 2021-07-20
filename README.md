@@ -13,6 +13,8 @@
 
 * #### VS Code extensions
 
+* #### Development norms
+
 ---
 
 ## Install & Init
@@ -53,3 +55,7 @@ Add the values, stored on Discord server.
 * Auto Close Tag
 * ESLint
 * sort-imports
+
+## Development norms
+
+* #### Naming
