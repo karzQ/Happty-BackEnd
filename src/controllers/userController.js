@@ -17,6 +17,9 @@ const {
     check_get_one,
     check_create_element,
     generateAccessCode,
+    checkPhoneNumber,
+    checkPasswordComplexity,
+    checkEmail,
 } = require('../utils/utils');
 
 exports.get_all_users = (req, res) => {
@@ -205,9 +208,9 @@ exports.update_one_user = (req, res) => {
                             lastname: req.body?.lastname ? capitalize(req.body.lastname) : user.lastname,
                             username: req.body?.username ? changeUsername(req.body?.username, user.username) : user.username,
                             age: req.body?.age ?? user.age,
-                            email: req.body?.email ?? user.email,
-                            password: req.body?.password ?? user.password,
-                            phone: req.body?.phone ?? user.phone,
+                            email: req.body?.email ? await checkEmail(req.body.email) : user.email,
+                            password: req.body?.password ? await checkPasswordComplexity(req.body.password) : user.password,
+                            phone: req.body?.phone ? await checkPhoneNumber(req.body.phone) : user.phone,
                         };
                         await User.replaceOne(
                             { _id: req.params.userId },
@@ -409,88 +412,100 @@ exports.login = async (req, res) => {
 
 exports.signup = async (req, res) => {
     let statusCode = 201;
-    const { role, firstname, lastname, username, age, email, password, phone, profilePicturePath } = req.body;
+    const { role, firstname, lastname, username, age, email, phone, profilePicturePath } = req.body;
     try {
         check_create_element(req, User, async () => {
             if (!validator.isEmail(email)) {
                 statusCode = 400;
                 throw {type: 'email_wrong_format'};
             }
-            else if (password === '' || password === null) {
+            else if (req.body.password === '' || req.body.password === null) {
                 statusCode = 400;
                 throw {type: 'password_required'}
             } else {
-                const hashedPassword = await bcrypt.hash(password, 10);
-                User.findOne({ email }, async (err, user) => {
-                    if (err) {
-                        statusCode = 500;
-                        throw {type: 'server_error'};
-                    } else if (user) {
-                        statusCode = 422;
-                        json_response(req, res, statusCode, {type: 'exist', objName: 'User' }, null);
-                    } else {
-
-                        // const uniqueCode = await generateAccessCode(User);
-
-                        const newUser = await new User({
-                            role,
-                            email: email.toLowerCase(),
-                            firstname: capitalize(firstname),
-                            lastname: capitalize(lastname),
-                            username: formatUsername(username, getDocumentsCount(User)),
-                            age: age ?? 0,
-                            password: hashedPassword,
-                            phone,
-                            profilePicturePath: profilePicturePath ?? '',
-                            // accessCode: await uniqueCode
-                        });
-
-                        console.log({newUser})
-                        
-                        newUser.save((error, cUser) => {
-                            if (error) {
-                                statusCode = 500;
-                                throw { type: 'server_error' };
-                            } else {
-                                const createdUser = { ...cUser._doc };
-                                delete createdUser.password;
-                                const data = {
-                                    ...createdUser,
-                                    _options: {
-                                        login: {
-                                            method: 'POST',
-                                            link: `http://${hostname}:${port}/login`,
-                                            properties: {
-                                                email: {
-                                                    type: 'String',
-                                                },
-                                                password: {
-                                                    type: 'String'
-                                                }
-                                            },
-                                        },
-                                        get_one: {
-                                            method: 'GET',
-                                            link: `http://${hostname}:${port}/users/${createdUser._id}`,
-                                            properties: {
-                                                email: {
-                                                    type: 'String',
-                                                },
-                                                password: {
-                                                    type: 'String'
-                                                }
-                                            },
-                                        }
-                                    }
-                                };
-                                json_response(req, res, statusCode, { type: 'success_create', objName: 'User' }, data);
-                            }
-                        });
-                    }
+                console.log("hello")
+                const password = await checkPasswordComplexity(req.body.password).catch(e => {
+                    statusCode = 500;
+                    json_response(req, res, statusCode, e, null, true);
+                    return;
                 });
+                
+                if (password !== undefined) {
+                    const hashedPassword = await bcrypt.hash(await password, 10);
+                    User.findOne({ email }, async (err, user) => {
+                        if (err) {
+                            statusCode = 500;
+                            throw {type: 'server_error'};
+                        } else if (user) {
+                            statusCode = 422;
+                            json_response(req, res, statusCode, {type: 'exist', objName: 'User' }, null);
+                        } else {
+
+                            // const uniqueCode = await generateAccessCode(User);
+
+                            console.log('hello 1')
+                            const newUser = await new User({
+                                role,
+                                email: await checkEmail(email.toLowerCase()),
+                                firstname: capitalize(firstname),
+                                lastname: capitalize(lastname),
+                                username: formatUsername(username, getDocumentsCount(User)),
+                                age: age ?? 0,
+                                password: hashedPassword,
+                                phone: await checkPhoneNumber(phone),
+                                profilePicturePath: profilePicturePath ?? '',
+                                // accessCode: await uniqueCode
+                            });
+                            console.log('hello 2')
+
+                            console.log({newUser})
+                            
+                            newUser.save((error, cUser) => {
+                                if (error) {
+                                    statusCode = 500;
+                                    throw { type: 'server_error' };
+                                } else {
+                                    const createdUser = { ...cUser._doc };
+                                    delete createdUser.password;
+                                    const data = {
+                                        ...createdUser,
+                                        _options: {
+                                            login: {
+                                                method: 'POST',
+                                                link: `http://${hostname}:${port}/login`,
+                                                properties: {
+                                                    email: {
+                                                        type: 'String',
+                                                    },
+                                                    password: {
+                                                        type: 'String'
+                                                    }
+                                                },
+                                            },
+                                            get_one: {
+                                                method: 'GET',
+                                                link: `http://${hostname}:${port}/users/${createdUser._id}`,
+                                                properties: {
+                                                    email: {
+                                                        type: 'String',
+                                                    },
+                                                    password: {
+                                                        type: 'String'
+                                                    }
+                                                },
+                                            }
+                                        }
+                                    };
+                                    json_response(req, res, statusCode, { type: 'success_create', objName: 'User' }, data);
+                                }
+                            });
+                        }
+                    });
+                }
             }
         })
     } catch (err) {
+        console.log({err})
         json_response(req, res, statusCode, 'POST', err, null, true);
     }
 };

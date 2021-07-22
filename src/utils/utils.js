@@ -1,5 +1,6 @@
 const { port, baseUrl: hostname } = require("../config");
 const bcrypt = require('bcrypt');
+const validator = require('validator');
 
 exports.get_request_path = (req) => {
   return `http://${hostname}:${port}${req.url}`;
@@ -46,6 +47,9 @@ exports.json_response = (req, res, statusCode, objMessage = { type, objName: nul
  * The message.
  */
 exports.get_response_message = (type, objName, value) => {
+
+  console.log({type, objName, value})
+
   switch (type) {
     // LOGIN
     case "success_login":
@@ -54,6 +58,10 @@ exports.get_response_message = (type, objName, value) => {
       return `Invalid couple Email/Password`;
     case "invalid_password":
         return 'Invalid password';
+    case "invalid_password_format":
+        return `Invalid format. Your password has to contains at minimum : ${value}`;
+    case "invalid_email_format":
+        return `Invalid format. Your email has to be like the following example: ${value}`;
 
     // GET
     case "get_one":
@@ -112,6 +120,10 @@ exports.get_response_message = (type, objName, value) => {
         return `Error in hash comparison`;
     case "invalid_token":
         return "Invalid token";
+    case "invalid_format":
+        return `${objName} property don't have the right format`;
+    case "provide_correct_value":
+        return `Please provide a correct ${objName}`;
 
     default:
       return `[Error] - ${type} isn't an available value.`;
@@ -285,4 +297,42 @@ exports.generateAccessCode = async (User) => {
             throw {type: 'server_error'};
         }
     });
+}
+
+exports.checkPhoneNumber = (phoneValue = '') => {
+  if (phoneValue.length < 10) {
+    throw {type: 'invalid_format', objName: 'Phone'}
+  } else if (!validator.isMobilePhone(phoneValue)) {
+    throw {type: 'provide_correct_value', objName: 'phone number'}
+  } else if (validator.isMobilePhone(phoneValue)) {
+    return phoneValue;
+  } else {
+    throw {type: 'server_error'}
+  }
+}
+
+exports.checkPasswordComplexity = async (password) => {
+  const minLength = 4;
+  console.log("pwd")
+  console.log(validator.isStrongPassword(password, {minLength}))
+  if (validator.isStrongPassword(password, {minLength})) {
+    console.log("pwd 1")
+    return password;
+  } else if (!validator.isStrongPassword(password, {minLength})) {
+    console.log("pwd 2")
+    throw {type: 'invalid_password_format', value: `8 characters with 1 UpperCased letter, 1 Number and 1 Symbol`};
+  } else {
+    console.log("pwd 3")
+    throw {type: 'server_error'}
+  }
+}
+
+exports.checkEmail = (email) => {
+  if (validator.isEmail(email)) {
+    return email;
+  } else if (!validator.isEmail(email)) {
+    throw {type: 'invalid_email_format', value: 'john.doe@gmail.com'}
+  } else {
+    throw {type: 'server_error'}
+  }
 }
