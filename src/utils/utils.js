@@ -299,7 +299,7 @@ exports.generateAccessCode = async (User) => {
     });
 }
 
-exports.checkPhoneNumber = (phoneValue = '') => {
+exports.checkPhoneNumber = async (phoneValue = '') => {
   if (phoneValue.length < 10) {
     throw {type: 'invalid_format', objName: 'Phone'}
   } else if (!validator.isMobilePhone(phoneValue)) {
@@ -313,21 +313,16 @@ exports.checkPhoneNumber = (phoneValue = '') => {
 
 exports.checkPasswordComplexity = async (password) => {
   const minLength = 4;
-  console.log("pwd")
-  console.log(validator.isStrongPassword(password, {minLength}))
   if (validator.isStrongPassword(password, {minLength})) {
-    console.log("pwd 1")
     return password;
   } else if (!validator.isStrongPassword(password, {minLength})) {
-    console.log("pwd 2")
     throw {type: 'invalid_password_format', value: `8 characters with 1 UpperCased letter, 1 Number and 1 Symbol`};
   } else {
-    console.log("pwd 3")
     throw {type: 'server_error'}
   }
 }
 
-exports.checkEmail = (email) => {
+exports.checkEmail = async (email) => {
   if (validator.isEmail(email)) {
     return email;
   } else if (!validator.isEmail(email)) {

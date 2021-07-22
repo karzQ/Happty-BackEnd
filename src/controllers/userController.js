@@ -201,6 +201,36 @@ exports.update_one_user = (req, res) => {
                         statusCode = 500;
                         throw {type: 'server_error'};
                     } else if (user) {
+                        let password = req.body?.password ?? user.password;
+                        let email = req.body?.email ?? user.email;
+                        let phone = req.body?.phone ?? user.phone;
+
+                        if (password === req.body?.password) {
+                            password = await checkPasswordComplexity(req.body.password).catch(e => {
+                                statusCode = 500;
+                                json_response(req, res, statusCode, e, null, true);
+                                return;
+                            });
+                            
+                            password = await bcrypt.hash(password, 10);
+                        }
+
+                        if (email === req.body.email) {
+                            email = await checkEmail(req.body.email.toLowerCase()).catch(e => {
+                                statusCode = 500;
+                                json_response(req, res, statusCode, e, null, true);
+                                return;
+                            });
+                        }
+
+                        if (phone === req.body.phone) {
+                            phone = await checkPhoneNumber(req.body.phone).catch(e => {
+                                statusCode = 500;
+                                json_response(req, res, statusCode, e, null, true);
+                                return;
+                            })
+                        }
+
                         const updatedUser = {
                             _id: user._id,
                             role: req.body?.role ?? user.role,
@@ -208,9 +238,9 @@ exports.update_one_user = (req, res) => {
                             lastname: req.body?.lastname ? capitalize(req.body.lastname) : user.lastname,
                             username: req.body?.username ? changeUsername(req.body?.username, user.username) : user.username,
                             age: req.body?.age ?? user.age,
-                            email: req.body?.email ? await checkEmail(req.body.email) : user.email,
-                            password: req.body?.password ? await checkPasswordComplexity(req.body.password) : user.password,
-                            phone: req.body?.phone ? await checkPhoneNumber(req.body.phone) : user.phone,
+                            email,
+                            password,
+                            phone,
                         };
                         await User.replaceOne(
                             { _id: req.params.userId },
@@ -412,7 +442,7 @@ exports.login = async (req, res) => {
 
 exports.signup = async (req, res) => {
     let statusCode = 201;
-    const { role, firstname, lastname, username, age, email, phone, profilePicturePath } = req.body;
+    const { role, firstname, lastname, username, age, profilePicturePath } = req.body;
     try {
         check_create_element(req, User, async () => {
             if (!validator.isEmail(email)) {
@@ -423,14 +453,25 @@ exports.signup = async (req, res) => {
                 statusCode = 400;
                 throw {type: 'password_required'}
             } else {
-                console.log("hello")
                 const password = await checkPasswordComplexity(req.body.password).catch(e => {
                     statusCode = 500;
                     json_response(req, res, statusCode, e, null, true);
                     return;
                 });
+
+                const email = await checkEmail(req.body.email.toLowerCase()).catch(e => {
+                    statusCode = 500;
+                    json_response(req, res, statusCode, e, null, true);
+                    return;
+                });
+
+                const phone = await checkPhoneNumber(req.body.phone).catch(e => {
+                    statusCode = 500;
+                    json_response(req, res, statusCode, e, null, true);
+                    return;
+                })
                 
-                if (password !== undefined) {
+                if (password !== undefined && email !== undefined && phone !== undefined) {
                     const hashedPassword = await bcrypt.hash(await password, 10);
                     User.findOne({ email }, async (err, user) => {
                         if (err) {
@@ -443,20 +484,18 @@ exports.signup = async (req, res) => {
 
                             // const uniqueCode = await generateAccessCode(User);
 
-                            console.log('hello 1')
                             const newUser = await new User({
                                 role,
-                                email: await checkEmail(email.toLowerCase()),
+                                email,
                                 firstname: capitalize(firstname),
                                 lastname: capitalize(lastname),
                                 username: formatUsername(username, getDocumentsCount(User)),
                                 age: age ?? 0,
                                 password: hashedPassword,
-                                phone: await checkPhoneNumber(phone),
+                                phone,
                                 profilePicturePath: profilePicturePath ?? '',
                                 // accessCode: await uniqueCode
                             });
-                            console.log('hello 2')
 
                             console.log({newUser})
                             
