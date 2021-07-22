@@ -63,7 +63,7 @@ module.exports = (server) => {
      *         description: Server internal error.
      */
     server.route('/users/:userId/delete')
-        .delete(userController.delete_one_user);
+        .delete(userController.delete_self);
 
     /**
      * @openapi

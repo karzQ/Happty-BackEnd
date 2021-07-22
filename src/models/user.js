@@ -4,9 +4,12 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
     role: {
-       type: String,
-       required: true,
-       trim: true
+        type: String,
+        required: true,
+        enum: [
+            'user',
+            'admin'
+        ]
     },
     password: {
         type: String,
@@ -16,7 +19,8 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: 'An email is required',
-        unique: true
+        unique: true,
+        trim: true
     },
     firstname: {
         type: String,
@@ -30,9 +34,9 @@ const userSchema = new Schema({
         trim: true
     },
 
-    pseudo: {
+    username: {
         type: String,
-        required: 'Pseudo is required',
+        required: 'Username is required',
         unique: true,
         trim: true
     },
@@ -44,8 +48,6 @@ const userSchema = new Schema({
     phone: {
         type: String,
         required: "Phone number is required",
-        unique: true,
-        trim: true
     },
 
     profilPicturePath: {
@@ -53,11 +55,7 @@ const userSchema = new Schema({
         trim: true
     },
 
-    notifications: {
-        type: [Object],
-    },
-
-    uniqueCode: {
+    accessCode: {
         type: String,
     }
 })
