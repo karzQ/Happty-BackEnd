@@ -1,6 +1,7 @@
 const { port, baseUrl: hostname } = require("../config");
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const multer = require('multer');
 
 exports.get_request_path = (req) => {
   return `http://${hostname}:${port}${req.url}`;
@@ -124,6 +125,10 @@ exports.get_response_message = (type, objName, value) => {
         return `${objName} property don't have the right format`;
     case "provide_correct_value":
         return `Please provide a correct ${objName}`;
+    case "upload_error":
+        return `An upload error has occured, please verify your file.`;
+    case "upload_multer_error":
+        return `A multer error has occured.`;
 
     default:
       return `[Error] - ${type} isn't an available value.`;
@@ -161,15 +166,15 @@ exports.check_get_one = (req, identifierName = null, next) => {
 
 /**
  * Check major cases for get API Method
- * @param req
- * Request object.
+ * @param objProperties
+ * Object properties.
  * @param properties
  * Properties to match with req.body content.
  * @param next
  * Callback for additional code.
  * @return {void} Nothing
  */
-exports.check_create_element = (req, model, next) => {
+exports.check_create_element = (objProperties, model, next) => {
   const modelProperties = { ...model.schema.paths };
   delete modelProperties.__v;
   delete modelProperties._id;
@@ -177,17 +182,17 @@ exports.check_create_element = (req, model, next) => {
   const properties = Object.keys(modelProperties);
 
   const allPropertiesExist = properties.map((prop) => {
-    if (!Object.keys(req.body).find((val) => val === prop)) {
+    if (!Object.keys(objProperties).find((val) => val === prop)) {
       return false;
     }
   });
 
   const valueIsMissing =
-    Object.keys(req.body).map((prop) => {
+    Object.keys(objProperties).map((prop) => {
       return (
-        req.body[`${prop}`] === undefined ||
-        req.body[`${prop}`] === null ||
-        req.body[`${prop}`] === ""
+        objProperties[`${prop}`] === undefined ||
+        objProperties[`${prop}`] === null ||
+        objProperties[`${prop}`] === ""
       );
     }) === false;
 
