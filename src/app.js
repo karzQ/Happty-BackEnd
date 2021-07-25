@@ -62,8 +62,8 @@ mongoose
 
 const userRoutes = require('./routes/userRoutes');
 userRoutes(app);
-// const partyRoutes = require('./routes/partyRoutes');
-// userRoutes(app);
+const partyRoutes = require('./routes/partyRoutes');
+partyRoutes(app);
 // const notificationRoutes = require('./routes/notificationRoutes');
 // userRoutes(app);
 

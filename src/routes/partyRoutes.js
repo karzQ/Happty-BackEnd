@@ -1,11 +1,11 @@
 module.exports = (server) => {
-    const userController = require('../controllers/userController');
+    const partyController = require('../controllers/partyController');
 
     /**
      * @openapi
      * /users:
      *   get:
-     *     tags: [Users]
+     *     tags: [Parties]
      *     summary: Get all users
      *     description: Get all users in the collection
      *     responses:
@@ -14,14 +14,14 @@ module.exports = (server) => {
      *       500:
      *         description: Server internal error.
      */
-    server.route('/users')
-        .get(userController.get_all_users);
+    server.route('/parties')
+        .get(partyController.get_all_parties);
 
     /**
      * @openapi
      * /users/{userId}:
      *   get:
-     *     tags: [Users]
+     *     tags: [Parties]
      *     summary: Get one user
      *     description: Get only one specific user. 
      *     responses:
@@ -30,14 +30,14 @@ module.exports = (server) => {
      *       500:
      *         description: Server internal error.
      */
-    server.route('/users/:userId')
-        .get(userController.get_one_user);
+    server.route('/parties/:partyId')
+        .get(partyController.get_one_party);
 
     /**
      * @openapi
      * /users/{userId}/update:
      *   put:
-     *     tags: [Users]
+     *     tags: [Parties]
      *     summary: Update an user
      *     description: Update an user.
      *     responses:
@@ -46,14 +46,14 @@ module.exports = (server) => {
      *       500:
      *         description: Server internal error.
      */
-    server.route('/users/:userId/update')
-        .put(userController.update_one_user);
+    server.route('/parties/:partyId/update')
+        .put(partyController.update_party);
 
     /**
      * @openapi
      * /users/{userId}/delete:
      *   delete:
-     *     tags: [Users]
+     *     tags: [Parties]
      *     summary: Delete an user
      *     description: Delete an user.
      *     responses:
@@ -62,30 +62,14 @@ module.exports = (server) => {
      *       500:
      *         description: Server internal error.
      */
-    server.route('/users/:userId/delete')
-        .delete(userController.delete_self);
-
-    /**
-     * @openapi
-     * /login:
-     *   post:
-     *     tags: [Users]
-     *     summary: Login user
-     *     description: Log-in an user.
-     *     responses:
-     *       201:
-     *         description: Return the token` and the user role. 
-     *       500:
-     *         description: Server internal error.
-     */
-    server.route('/login')
-        .post(userController.login)
+    server.route('/parties/:partyId/delete')
+        .delete(partyController.delete_party);
 
     /**
      * @openapi
      * /users/create:
      *   post:
-     *     tags: [Users]
+     *     tags: [Parties]
      *     summary: Subscribe an user
      *     description: Subscription for a new user. 
      *     responses:
@@ -94,6 +78,8 @@ module.exports = (server) => {
      *       500:
      *         description: Server internal error.
      */
-    server.route('/users/create')
-            .post(userController.signup)
+    server.route('/parties/create')
+        .post(partyController.create_party)
+
+    
 }

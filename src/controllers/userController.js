@@ -22,6 +22,7 @@ const {
     checkEmail,
 } = require('../utils/utils');
 
+
 exports.get_all_users = (req, res) => {
     let statusCode = 200;
 
@@ -56,13 +57,30 @@ exports.get_all_users = (req, res) => {
                                             'admin'
                                         ]
                                     },
-                                    firstname: 'String',
-                                    lastname: 'String',
-                                    username: 'String',
-                                    age: 'Number',
-                                    email: 'String',
-                                    password: 'String',
-                                    phone: 'Number',
+                                    firstname: {
+                                        type: 'String'
+                                    },
+                                    lastname: {
+                                        type: 'String'
+                                    },
+                                    username: {
+                                        type: 'String'
+                                    },
+                                    age: {
+                                        type: 'Number'
+                                    },
+                                    email: {
+                                        type: 'String'
+                                    },
+                                    password: {
+                                        type: 'String'
+                                    },
+                                    profileImage: {
+                                        type: 'String'
+                                    },
+                                    phone: {
+                                        type: 'Number'
+                                    },
                                 },
                             },
                             delete: {
@@ -88,13 +106,30 @@ exports.get_all_users = (req, res) => {
                                         'admin'
                                     ]
                                 },
-                                firstname: 'String',
-                                lastname: 'String',
-                                username: 'String',
-                                age: 'Number',
-                                email: 'String',
-                                password: 'String',
-                                phone: 'Number',
+                                firstname: {
+                                    type: 'String'
+                                },
+                                lastname: {
+                                    type: 'String'
+                                },
+                                username: {
+                                    type: 'String'
+                                },
+                                age: {
+                                    type: 'Number'
+                                },
+                                email: {
+                                    type: 'String'
+                                },
+                                password: {
+                                    type: 'String'
+                                },
+                                profileImage: {
+                                    type: 'String'
+                                },
+                                phone: {
+                                    type: 'Number'
+                                },
                             },
                         },
                     },
@@ -137,13 +172,30 @@ exports.get_one_user = (req, res) => {
                                             'admin'
                                         ]
                                     },
-                                    firstname: 'String',
-                                    lastname: 'String',
-                                    username: 'String',
-                                    age: 'Number',
-                                    email: 'String',
-                                    password: 'String',
-                                    phone: 'Number',
+                                    firstname: {
+                                        type: 'String'
+                                    },
+                                    lastname: {
+                                        type: 'String'
+                                    },
+                                    username: {
+                                        type: 'String'
+                                    },
+                                    age: {
+                                        type: 'Number'
+                                    },
+                                    email: {
+                                        type: 'String'
+                                    },
+                                    password: {
+                                        type: 'String'
+                                    },
+                                    profileImage: {
+                                        type: 'String'
+                                    },
+                                    phone: {
+                                        type: 'Number'
+                                    },
                                 },
                             },
                             update: {
@@ -157,13 +209,30 @@ exports.get_one_user = (req, res) => {
                                             'admin'
                                         ]
                                     },
-                                    firstname: 'String',
-                                    lastname: 'String',
-                                    username: 'String',
-                                    age: 'Number',
-                                    email: 'String',
-                                    password: 'String',
-                                    phone: 'Number',
+                                    firstname: {
+                                        type: 'String'
+                                    },
+                                    lastname: {
+                                        type: 'String'
+                                    },
+                                    username: {
+                                        type: 'String'
+                                    },
+                                    age: {
+                                        type: 'Number'
+                                    },
+                                    email: {
+                                        type: 'String'
+                                    },
+                                    password: {
+                                        type: 'String'
+                                    },
+                                    profileImage: {
+                                        type: 'String'
+                                    },
+                                    phone: {
+                                        type: 'Number'
+                                    },
                                 },
                             },
                             delete: {
@@ -265,13 +334,30 @@ exports.update_one_user = (req, res) => {
                                                 'admin'
                                             ]
                                         },
-                                        firstname: 'String',
-                                        lastname: 'String',
-                                        username: 'String',
-                                        age: 'Number',
-                                        email: 'String',
-                                        password: 'String',
-                                        phone: 'Number',
+                                        firstname: {
+                                            type: 'String'
+                                        },
+                                        lastname: {
+                                            type: 'String'
+                                        },
+                                        username: {
+                                            type: 'String'
+                                        },
+                                        age: {
+                                            type: 'Number'
+                                        },
+                                        email: {
+                                            type: 'String'
+                                        },
+                                        password: {
+                                            type: 'String'
+                                        },
+                                        profileImage: {
+                                            type: 'String'
+                                        },
+                                        phone: {
+                                            type: 'Number'
+                                        },
                                     },
                                 },
                                 update: {
@@ -285,13 +371,30 @@ exports.update_one_user = (req, res) => {
                                                 'admin'
                                             ]
                                         },
-                                        firstname: 'String',
-                                        lastname: 'String',
-                                        username: 'String',
-                                        age: 'Number',
-                                        email: 'String',
-                                        password: 'String',
-                                        phone: 'Number',
+                                        firstname: {
+                                            type: 'String'
+                                        },
+                                        lastname: {
+                                            type: 'String'
+                                        },
+                                        username: {
+                                            type: 'String'
+                                        },
+                                        age: {
+                                            type: 'Number'
+                                        },
+                                        email: {
+                                            type: 'String'
+                                        },
+                                        password: {
+                                            type: 'String'
+                                        },
+                                        profileImage: {
+                                            type: 'String'
+                                        },
+                                        phone: {
+                                            type: 'Number'
+                                        },
                                     },
                                 },
                                 delete: {
@@ -442,9 +545,9 @@ exports.login = async (req, res) => {
 
 exports.signup = async (req, res) => {
     let statusCode = 201;
-    const { role, firstname, lastname, username, age, profilePicturePath } = req.body;
+    const { role, firstname, lastname, username, age, profileImage } = req.body;
     try {
-        check_create_element(req, User, async () => {
+        check_create_element({...req.body}, User, async () => {
             if (!validator.isEmail(email)) {
                 statusCode = 400;
                 throw {type: 'email_wrong_format'};
@@ -483,6 +586,8 @@ exports.signup = async (req, res) => {
                         } else {
 
                             // const uniqueCode = await generateAccessCode(User);
+                            
+                            // TODO: Manage profileImage
 
                             const newUser = await new User({
                                 role,
@@ -493,7 +598,7 @@ exports.signup = async (req, res) => {
                                 age: age ?? 0,
                                 password: hashedPassword,
                                 phone,
-                                profilePicturePath: profilePicturePath ?? '',
+                                profileImage: profileImage ?? '',
                                 // accessCode: await uniqueCode
                             });
 
@@ -521,17 +626,43 @@ exports.signup = async (req, res) => {
                                                     }
                                                 },
                                             },
-                                            get_one: {
+                                            get: {
                                                 method: 'GET',
-                                                link: `http://${hostname}:${port}/users/${createdUser._id}`,
+                                                link: `http://${hostname}:${port}/users/${createdUser._id}`
+                                            },
+                                            update: {
+                                                method: 'PUT',
+                                                link: `http://${hostname}:${port}/users/${createdUser._id}/update`,
                                                 properties: {
+                                                    firstname: {
+                                                        type: 'String'
+                                                    },
+                                                    lastname: {
+                                                        type: 'String'
+                                                    },
+                                                    username: {
+                                                        type: 'String'
+                                                    },
+                                                    age: {
+                                                        type: 'Number'
+                                                    },
                                                     email: {
-                                                        type: 'String',
+                                                        type: 'String'
                                                     },
                                                     password: {
                                                         type: 'String'
-                                                    }
+                                                    },
+                                                    profileImage: {
+                                                        type: 'String'
+                                                    },
+                                                    phone: {
+                                                        type: 'Number'
+                                                    },
                                                 },
+                                            },
+                                            delete: {
+                                                method: 'DELETE',
+                                                link: `http://${hostname}:${port}/users/${createdUser._id}/delete`
                                             }
                                         }
                                     };

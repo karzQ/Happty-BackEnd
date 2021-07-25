@@ -50,7 +50,7 @@ const userSchema = new Schema({
         required: "Phone number is required",
     },
 
-    profilPicturePath: {
+    profileImage: {
         type: String,
         trim: true
     },
@@ -61,5 +61,4 @@ const userSchema = new Schema({
 })
 
 userSchema.plugin(uniqueValidator, { message: "Error, expected \"{PATH}\" ({VALUE}) to be unique "});
-
 module.exports = mongoose.model("User", userSchema);
