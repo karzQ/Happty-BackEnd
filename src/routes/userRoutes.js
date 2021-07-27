@@ -79,7 +79,7 @@ module.exports = (server) => {
      *         description: Server internal error.
      */
     server.route('/login')
-        .post(userController.login)
+        .post(userController.login);
 
     /**
      * @openapi
@@ -95,5 +95,5 @@ module.exports = (server) => {
      *         description: Server internal error.
      */
     server.route('/users/create')
-            .post(userController.signup)
+            .post(userController.signup);
 }

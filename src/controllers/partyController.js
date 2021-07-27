@@ -1,6 +1,8 @@
-const { json_response, check_create_element, check_get_one } = require('../utils/utils');
+const { json_response, check_create_element, check_get_one, check_update } = require('../utils/utils');
 const { verify_token } = require('../middlewares/jwtMiddleware');
 const Party = require('../models/party');
+const User = require('../models/user');
+const { baseUrl: hostname, port } = require('./../config');
 
 require('dotenv').config();
 
@@ -115,6 +117,7 @@ exports.get_one_party = (req, res) => {
                         }
 
                         json_response(req, res, statusCode, {type: 'get_one', objName: "Party"}, {...obj});
+                        return;
                         
                     } else {
                         statusCode = 500;
@@ -125,6 +128,7 @@ exports.get_one_party = (req, res) => {
         })
     } catch (err) {
         json_response(req, res, statusCode, err, null, true);
+        return;
     }
 }
 
@@ -276,7 +280,8 @@ exports.get_all_parties = (req, res) => {
                             }
                         }
                     }
-                    json_response(req, res, statusCode, {type: 'get_many', objName: 'Party'}, {...obj})
+                    json_response(req, res, statusCode, {type: 'get_many', objName: 'Party'}, {...obj});
+                    return;
 
                 } else {
                     statusCode = 500;
@@ -286,6 +291,7 @@ exports.get_all_parties = (req, res) => {
         })
     } catch (err) {
         json_response(req, res, statusCode, err, null, true);
+        return;
     }
 }
 
@@ -296,37 +302,153 @@ exports.create_party = (req, res) => {
     try {
         verify_token(req, res, false, async (payload) => {
             check_create_element({...req.body, hostId: payload.userId}, Party, () => {
-                
                 let tasksArr = [];
                 if (tasksList.length > 0) {
                     tasksList.forEach(task => {
                         delete task._doc._id;
                         tasksArr.push(new Task({
                             ...task._doc
-                        }))
-
-                        console.log({task})
+                        }));
+                        console.log({task});
                     })
                 }
-                
-                const newParty = new Party({
-                    hostId: payload.userId,
-                    name,
-                    date: typeof date.getMonth === Date ? date : new Date(date),
-                    location,
-                    tasksList: tasksArr,
-                    guestsList,
-                });
 
-                newParty.save((error, cParty) => {
-                    if (error) {
+                User.find({_id: {
+                    $in: guestsList
+                }}, (err, users) => {
+                    if (err) {
                         statusCode = 500;
                         throw {type: 'server_error'};
+                        
+                    } else if (users.length === 0) {
+                        statusCode = 404;
+                        throw {type: 'not_corresponding', objName: 'User'};
+
+                    } else if (users.length > 0) {
+                        
+                        const newParty = new Party({
+                            hostId: payload.userId,
+                            name,
+                            date: typeof date.getMonth === Date ? date : new Date(date),
+                            location,
+                            tasksList: tasksArr,
+                            guestsList,
+                        });
+        
+                        newParty.save((error, cParty) => {
+                            if (error) {
+                                console.log('test 1')
+                                if (error.code === 11000) {
+                                    statusCode = 500;
+                                    json_response(req, res, statusCode, { type: 'already_exist_property', objName: Object.keys(error.keyValue)[0] }, null, true);
+                                    return;
+                                } else {
+                                    statusCode = 500;
+                                    json_response(req, res, statusCode, { type: 'server_error' }, null, true);
+                                    return;
+                                }
+                            } else {
+                                console.log('test 2')
+                                const createdParty = { ...cParty._doc };
+                                const data = {
+                                    ...createdParty,
+                                    _options: {
+                                        get: {
+                                            method: 'GET',
+                                            link: `http://${hostname}:${port}/parties/${createdParty._id}`
+                                        },
+                                        update: {
+                                            method: 'PATCH',
+                                            link: `http://${hostname}:${port}/parties/${createdParty._id}/update`,
+                                            properties: {
+                                                name: {
+                                                    type: 'String'
+                                                },
+                                                date: {
+                                                    type: 'Date'
+                                                },
+                                                location: {
+                                                    type : 'Object',
+                                                    properties: {
+                                                        x: 'String',
+                                                        y: 'String'
+                                                    }
+                                                },
+                                                tasksList: {
+                                                    type: 'Array',
+                                                    info: 'Objects list',
+                                                    properties: {
+                                                        type: {
+                                                            type: 'String'
+                                                        },
+                                                        content: {
+                                                            type: 'String'
+                                                        },
+                                                        assignedId: {
+                                                            type: 'String'
+                                                        },
+                                                        isCompleted: {
+                                                            type: 'Boolean'
+                                                        }
+                                                    }
+                                                },
+                                                guestsList: {
+                                                    type: 'Array',
+                                                    info: 'userId List'
+                                                }
+                                            }
+                                        },
+                                        delete: {
+                                            method: 'DELETE',
+                                            link: `http://${hostname}:${port}/parties/${createdParty._id}/delete`
+                                        }
+                                    }
+                                }
+        
+                                json_response(req, res, statusCode, {type: 'success_create', objName: 'Party'}, data)
+                                return;
+                            }
+                        });
                     } else {
-                        const createdParty = { ...cParty._doc };
+                        statusCode = 500;
+                        throw {type: 'error_occured'};
+                    }
+                });
+            })
+        });
+    } catch (err) {
+        json_response(req, res, statusCode, err, null, true)
+        return;
+    }
+}
+
+exports.update_party = (req, res) => {
+    let statusCode = 201;
+    const { partyId } = req.params;
+
+    try {
+        verify_token(req, res, false, async (payload) => {
+            check_update(req, 'partyId', () => {
+                Party.findOne({_id: partyId, hostId: payload.userId}, async (err, party) => {
+                    if (err) {
+                        statusCode = 500;
+                        throw {type: 'server_error'};
+                    } else if (party) {
+                        
+                        const updatedParty = {
+                            ...party._doc,
+                            ...req.body
+                        }
+
+                        await Party.replaceOne(
+                            {_id: partyId},
+                            {...updatedParty}
+                        );
+
                         const data = {
-                            ...createdParty,
-                            _options: {
+                            data: {...updatedParty},
+                            previous: {...party._doc},
+                            options: {
                                 get: {
                                     method: 'GET',
                                     link: `http://${hostname}:${port}/parties/${createdParty._id}`
@@ -379,20 +501,49 @@ exports.create_party = (req, res) => {
                             }
                         }
 
-                        json_response(req, res, statusCode, {type: 'get_many', objName: 'Parties'}, {...data})
+                        json_response(req, res, statusCode, {type: 'success_update', objName: 'Party', value: `${updatedParty.name}`}, data)
+                        return;
+
+                    } else if (!party) {
+                        statusCode = 404;
+                        throw {type: 'not_found', objName: 'Party'};
+                    } else {
+                        statusCode = 500;
+                        throw {type: 'error_occured'};
                     }
                 });
-            })
-        });
+            });
+        })
     } catch (err) {
-        json_response(req, res, statusCode, err, null, true)
+        json_response(req, res, statusCode, err, null, true);
+        return;
     }
 }
 
-exports.update_party = (req, res) => {
-
-}
-
 exports.delete_party = (req, res) => {
+    let statusCode = 209;
+    const { partyId } = req.params;
 
+    try {
+        verify_token(req, res, false, (payload) => {
+            Party.findOneAndDelete({_id: partyId, hostId: payload.userId}, (err, party) => {
+                if (err) {
+                    statusCode = 500;
+                    throw {type: 'server_error'};
+                } else if (!party) {
+                    statusCode = 404;
+                    throw {type: 'not_found', objName: 'Party'};
+                } else if (party) {
+                    json_response(req, res, statusCode, {type: 'success_delete', objName: 'Party', value: party._id}, party);
+                    return;
+                } else {
+                    statusCode = 500;
+                    throw {type: 'error_occured'};
+                }
+            });
+        });
+    } catch (err) {
+        json_response(req, res, statusCode, err, null, true);
+        return;
+    }
 }

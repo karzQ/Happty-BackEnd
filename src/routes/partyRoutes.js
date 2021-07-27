@@ -79,7 +79,5 @@ module.exports = (server) => {
      *         description: Server internal error.
      */
     server.route('/parties/create')
-        .post(partyController.create_party)
-
-    
+        .post(partyController.create_party);
 }

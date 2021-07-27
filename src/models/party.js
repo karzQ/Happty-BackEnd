@@ -34,6 +34,7 @@ const partySchema = new Schema({
     },
     tasksList: {
         type: [Task.schema.obj],
+        default: []
     },
     guestsList: {
         type: [String],
