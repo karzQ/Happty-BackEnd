@@ -301,10 +301,10 @@ exports.update_one_user = (req, res) => {
                         }
 
                         const updatedUser = {
-                            _id: user._id,
+                            ...user._doc,
                             role: req.body?.role ?? user.role,
                             firstname: req.body?.firstname ? capitalize(req.body.firstname) : user.firstname,
-                            lastname: req.body?.lastname ? capitalize(req.body.lastname) : user.lastname,
+                            lastname: req.body?.lastname ? req.body.lastname.toUpperCase() : user.lastname.toUpperCase(),
                             username: req.body?.username ? changeUsername(req.body?.username, user.username) : user.username,
                             age: req.body?.age ?? user.age,
                             email,
@@ -438,10 +438,12 @@ exports.delete_self = (req, res) => {
                         statusCode = 500;
                         throw {type: 'server_error'};
                     } else if (user) {
-                        await json_response(req, res, statusCode, {type: 'success_delete', objName: 'User', value: user._id}, user);
+                        await json_response(req, res, statusCode, {type: 'success_delete', objName: 'User', value: user._id}, null);
+                        return;
                     } else if (!user) {
                         statusCode = 404;
                         json_response(req, res, statusCode, {type: 'not_found', objName: 'User'}, null, true);
+                        return;
                     } else {
                         statusCode = 500;
                         throw {type: 'server_error'};
@@ -454,6 +456,7 @@ exports.delete_self = (req, res) => {
         }
     } catch (err) {
         json_response(req, res, statusCode, err, null, true);
+        return;
     }
 };
 
@@ -481,7 +484,6 @@ exports.delete_user_admin = async (req, res) => {
             throw {type: 'id_required'};
         }
     } catch (err) {
-        console.log({err})
         json_response(req, res, statusCode, err, null, true);
         return;
     }
@@ -537,7 +539,6 @@ exports.login = async (req, res) => {
             throw {type: 'fields_required'};
         }
     } catch (err) {
-        console.log({err})
         json_response(req, res, statusCode, err, null, true);
         return;
     }
@@ -548,134 +549,138 @@ exports.signup = async (req, res) => {
     const { role, firstname, lastname, username, age, profileImage } = req.body;
     try {
         check_create_element({...req.body}, User, async () => {
-            if (!validator.isEmail(email)) {
-                statusCode = 400;
-                throw {type: 'email_wrong_format'};
-            }
-            else if (req.body.password === '' || req.body.password === null) {
-                statusCode = 400;
-                throw {type: 'password_required'}
-            } else {
-                const password = await checkPasswordComplexity(req.body.password).catch(e => {
-                    statusCode = 500;
-                    json_response(req, res, statusCode, e, null, true);
-                    return;
-                });
+            const password = await checkPasswordComplexity(req.body.password).catch(e => {
+                statusCode = 500;
+                console.log({e})
+                json_response(req, res, statusCode, e, null, true);
+                return;
+            });
 
-                const email = await checkEmail(req.body.email.toLowerCase()).catch(e => {
-                    statusCode = 500;
-                    json_response(req, res, statusCode, e, null, true);
-                    return;
-                });
+            const email = await checkEmail(req.body.email.toLowerCase()).catch(e => {
+                statusCode = 500;
+                console.log({e})
+                json_response(req, res, statusCode, e, null, true);
+                return;
+            });
 
-                const phone = await checkPhoneNumber(req.body.phone).catch(e => {
-                    statusCode = 500;
-                    json_response(req, res, statusCode, e, null, true);
-                    return;
-                })
-                
-                if (password !== undefined && email !== undefined && phone !== undefined) {
-                    const hashedPassword = await bcrypt.hash(await password, 10);
-                    User.findOne({ email }, async (err, user) => {
-                        if (err) {
-                            statusCode = 500;
-                            throw {type: 'server_error'};
-                        } else if (user) {
-                            statusCode = 422;
-                            json_response(req, res, statusCode, {type: 'exist', objName: 'User' }, null);
-                        } else {
+            const phone = await checkPhoneNumber(req.body.phone).catch(e => {
+                statusCode = 500;
+                console.log({e})
+                json_response(req, res, statusCode, e, null, true);
+                return;
+            })
+            
+            if (password !== undefined && email !== undefined && phone !== undefined) {
+                const hashedPassword = await bcrypt.hash(await password, 10);
+                User.findOne({ email }, async (err, user) => {
+                    if (err) {
+                        statusCode = 500;
+                        throw {type: 'server_error'};
+                    } else if (user) {
+                        statusCode = 422;
+                        json_response(req, res, statusCode, {type: 'exist', objName: 'User' }, null);
+                        return;
+                    } else {
 
-                            // const uniqueCode = await generateAccessCode(User);
-                            
-                            // TODO: Manage profileImage
+                        // const uniqueCode = await generateAccessCode(User);
+                        
+                        // TODO: Manage profileImage
 
-                            const newUser = await new User({
-                                role,
-                                email,
-                                firstname: capitalize(firstname),
-                                lastname: capitalize(lastname),
-                                username: formatUsername(username, getDocumentsCount(User)),
-                                age: age ?? 0,
-                                password: hashedPassword,
-                                phone,
-                                profileImage: profileImage ?? '',
-                                // accessCode: await uniqueCode
-                            });
+                        const newUser = await new User({
+                            role,
+                            email,
+                            firstname: capitalize(firstname),
+                            lastname: lastname.toUpperCase(),
+                            username: formatUsername(username, getDocumentsCount(User)),
+                            age: age ?? 0,
+                            password: hashedPassword,
+                            phone,
+                            profileImage: profileImage ?? '',
+                            // accessCode: await uniqueCode
+                        });
 
-                            console.log({newUser})
-                            
-                            newUser.save((error, cUser) => {
-                                if (error) {
+                        console.log({newUser})
+                        
+                        newUser.save((error, cUser) => {
+                            if (error) {
+                                if (error.code === 11000) {
                                     statusCode = 500;
-                                    throw { type: 'server_error' };
+                                    json_response(req, res, statusCode, { type: 'already_exist_property', objName: Object.keys(error.keyValue)[0] }, null, true);
+                                    return;
                                 } else {
-                                    const createdUser = { ...cUser._doc };
-                                    delete createdUser.password;
-                                    const data = {
-                                        ...createdUser,
-                                        _options: {
-                                            login: {
-                                                method: 'POST',
-                                                link: `http://${hostname}:${port}/login`,
-                                                properties: {
-                                                    email: {
-                                                        type: 'String',
-                                                    },
-                                                    password: {
-                                                        type: 'String'
-                                                    }
-                                                },
-                                            },
-                                            get: {
-                                                method: 'GET',
-                                                link: `http://${hostname}:${port}/users/${createdUser._id}`
-                                            },
-                                            update: {
-                                                method: 'PUT',
-                                                link: `http://${hostname}:${port}/users/${createdUser._id}/update`,
-                                                properties: {
-                                                    firstname: {
-                                                        type: 'String'
-                                                    },
-                                                    lastname: {
-                                                        type: 'String'
-                                                    },
-                                                    username: {
-                                                        type: 'String'
-                                                    },
-                                                    age: {
-                                                        type: 'Number'
-                                                    },
-                                                    email: {
-                                                        type: 'String'
-                                                    },
-                                                    password: {
-                                                        type: 'String'
-                                                    },
-                                                    profileImage: {
-                                                        type: 'String'
-                                                    },
-                                                    phone: {
-                                                        type: 'Number'
-                                                    },
-                                                },
-                                            },
-                                            delete: {
-                                                method: 'DELETE',
-                                                link: `http://${hostname}:${port}/users/${createdUser._id}/delete`
-                                            }
-                                        }
-                                    };
-                                    json_response(req, res, statusCode, { type: 'success_create', objName: 'User' }, data);
+                                    statusCode = 500;
+                                    json_response(req, res, statusCode, { type: 'server_error' }, null, true);
+                                    return;
                                 }
-                            });
-                        }
-                    });
-                }
+                            } else {
+                                const createdUser = { ...cUser._doc };
+                                delete createdUser.password;
+                                const data = {
+                                    ...createdUser,
+                                    _options: {
+                                        login: {
+                                            method: 'POST',
+                                            link: `http://${hostname}:${port}/login`,
+                                            properties: {
+                                                email: {
+                                                    type: 'String',
+                                                },
+                                                password: {
+                                                    type: 'String'
+                                                }
+                                            },
+                                        },
+                                        get: {
+                                            method: 'GET',
+                                            link: `http://${hostname}:${port}/users/${createdUser._id}`
+                                        },
+                                        update: {
+                                            method: 'PUT',
+                                            link: `http://${hostname}:${port}/users/${createdUser._id}/update`,
+                                            properties: {
+                                                firstname: {
+                                                    type: 'String'
+                                                },
+                                                lastname: {
+                                                    type: 'String'
+                                                },
+                                                username: {
+                                                    type: 'String'
+                                                },
+                                                age: {
+                                                    type: 'Number'
+                                                },
+                                                email: {
+                                                    type: 'String'
+                                                },
+                                                password: {
+                                                    type: 'String'
+                                                },
+                                                profileImage: {
+                                                    type: 'String'
+                                                },
+                                                phone: {
+                                                    type: 'Number'
+                                                },
+                                            },
+                                        },
+                                        delete: {
+                                            method: 'DELETE',
+                                            link: `http://${hostname}:${port}/users/${createdUser._id}/delete`
+                                        }
+                                    }
+                                };
+                                json_response(req, res, statusCode, { type: 'success_create', objName: 'User' }, data);
+                                return;
+                            }
+                        });
+                    }
+                });
             }
-        })
+        });
     } catch (err) {
         console.log({err})
         json_response(req, res, statusCode, 'POST', err, null, true);
+        return;
     }
 };

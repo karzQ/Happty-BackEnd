@@ -76,7 +76,7 @@ exports.get_response_message = (type, objName, value) => {
     case "update_no_body":
       return `You must at least update one property`;
     case "success_update":
-      return `${objName} ${value} has been successfully updated`;
+      return `The ${objName} (${value}) has been successfully updated`;
 
     // DELETE
     case "success_delete":
@@ -129,6 +129,10 @@ exports.get_response_message = (type, objName, value) => {
         return `An upload error has occured, please verify your file.`;
     case "upload_multer_error":
         return `A multer error has occured.`;
+    case "not_corresponding":
+        return `${objName} id does not corresponding with existing data or ${objName} doesn't exist.`;
+    case "already_exist_property":
+        return `This ${objName} is already used.`;
 
     default:
       return `[Error] - ${type} isn't an available value.`;
