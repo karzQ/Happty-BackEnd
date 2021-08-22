@@ -259,6 +259,116 @@ exports.get_one_user = (req, res) => {
     }
 };
 
+exports.get_current_user = (req, res) => {
+    let statusCode = 200;
+    try {
+        check_get_one(req, 'userId', () => {
+            User.findOne({ _id: req.params.userId }, (err, user) => {
+                if (err) {
+                    statusCode = 500;
+                    throw {type: 'server_error'};
+                } else if (user) {
+                    const data = {
+                       ...user._doc,
+                        _options: {
+                            create: {
+                                method: 'POST',
+                                link: `http://${hostname}:${port}/users/create`,
+                                properties: {
+                                    role: {
+                                        type: 'Enum',
+                                        values: [
+                                            'user',
+                                            'admin'
+                                        ]
+                                    },
+                                    firstname: {
+                                        type: 'String'
+                                    },
+                                    lastname: {
+                                        type: 'String'
+                                    },
+                                    username: {
+                                        type: 'String'
+                                    },
+                                    age: {
+                                        type: 'Number'
+                                    },
+                                    email: {
+                                        type: 'String'
+                                    },
+                                    password: {
+                                        type: 'String'
+                                    },
+                                    profileImage: {
+                                        type: 'String'
+                                    },
+                                    phone: {
+                                        type: 'Number'
+                                    },
+                                },
+                            },
+                            update: {
+                                method: 'PUT',
+                                link: `http://${hostname}:${port}/users/${user._id}/update`,
+                                properties: {
+                                    role: {
+                                        type: 'Enum',
+                                        values: [
+                                            'user',
+                                            'admin'
+                                        ]
+                                    },
+                                    firstname: {
+                                        type: 'String'
+                                    },
+                                    lastname: {
+                                        type: 'String'
+                                    },
+                                    username: {
+                                        type: 'String'
+                                    },
+                                    age: {
+                                        type: 'Number'
+                                    },
+                                    email: {
+                                        type: 'String'
+                                    },
+                                    password: {
+                                        type: 'String'
+                                    },
+                                    profileImage: {
+                                        type: 'String'
+                                    },
+                                    phone: {
+                                        type: 'Number'
+                                    },
+                                },
+                            },
+                            delete: {
+                                method: 'DELETE',
+                                link: `http://${hostname}:${port}/users/${user._id}/delete`,
+                            },
+                        },
+                    };
+                    json_response(
+                        req,
+                        res,
+                        statusCode,
+                        {type: 'get_one', objName: 'User'},
+                        data
+                    );
+                } else {
+                    statusCode = 404;
+                    throw {type: 'not_found', objName: 'User'}
+                }
+            });
+        });
+    } catch (err) {
+        json_response(req, res, statusCode, err, null, true);
+    }
+};
+
 exports.update_one_user = (req, res) => {
     let statusCode = 200;
 
@@ -497,21 +607,24 @@ exports.login = async (req, res) => {
 
         if (email && password) {
             await User.findOne({email}, async (err, user) => {
+                console.log({err})
+                console.log({user})
                 if (err) {
                     statusCode = 500;
-                    throw {type: 'server_error'};
+                    json_response(req, res, statusCode, {type: "server_error"}, null, true);
 
-                } else if (!user) {
+                } else if (!user || user === null) {
                     statusCode = 401;
-                    throw {type: 'invalid_email'};
+                    json_response(req, res, statusCode, {type: "invalid_email"}, null, true);
 
                 } else if (user) {
                     const isDecryptedPassword = await decryptPassword(req.body.password, user.password);
+                    console.log({isDecryptedPassword})
                     if (isDecryptedPassword === true) {
                         jwt.sign({ id: user._id, email: user.email, role: user.role }, JWT_TOKEN, { expiresIn: '24 hours' }, async (err, token) => {
                                 if (err) {
                                     statusCode = 500;
-                                    throw {type: 'server_error'};
+                                    json_response(req, res, statusCode, {type: "server_error"}, null, true);
                                 } else if (token) {
                                     const data = {
                                         token,
@@ -527,16 +640,16 @@ exports.login = async (req, res) => {
                         );
                     } else {
                         statusCode = 400;
-                        throw {type: 'email_pwd_couple_error'};
+                        json_response(req, res, statusCode, {type: "email_pwd_couple_error"}, null, true);
                     }
                 } else {
                     statusCode = 500;
-                    throw {type: 'server_error'};
+                    json_response(req, res, statusCode, {type: "server_error"}, null, true);
                 }
             })
         } else {
             statusCode = 500;
-            throw {type: 'fields_required'};
+            json_response(req, res, statusCode, {type: "fields_required"}, null, true);
         }
     } catch (err) {
         json_response(req, res, statusCode, err, null, true);
@@ -581,11 +694,7 @@ exports.signup = async (req, res) => {
                         json_response(req, res, statusCode, {type: 'exist', objName: 'User' }, null);
                         return;
                     } else {
-
-                        // const uniqueCode = await generateAccessCode(User);
                         
-                        // TODO: Manage profileImage
-
                         const newUser = await new User({
                             role,
                             email,
