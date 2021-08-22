@@ -3,14 +3,14 @@ module.exports = (server) => {
 
     /**
      * @openapi
-     * /users:
+     * /parties:
      *   get:
      *     tags: [Parties]
-     *     summary: Get all users
-     *     description: Get all users in the collection
+     *     summary: Get all parties
+     *     description: Get all parties in the collection
      *     responses:
      *       200:
-     *         description: Return all users.
+     *         description: Return all parties.
      *       500:
      *         description: Server internal error.
      */
@@ -19,11 +19,11 @@ module.exports = (server) => {
 
     /**
      * @openapi
-     * /users/{userId}:
+     * /parties/{partyId}:
      *   get:
      *     tags: [Parties]
      *     summary: Get one user
-     *     description: Get only one specific user. 
+     *     description: Get only one specific party for one . 
      *     responses:
      *       200:
      *         description: Return the user.
@@ -35,14 +35,14 @@ module.exports = (server) => {
 
     /**
      * @openapi
-     * /users/{userId}/update:
+     * /parties/{partyId}/update:
      *   put:
      *     tags: [Parties]
-     *     summary: Update an user
-     *     description: Update an user.
+     *     summary: Update a party
+     *     description: Update a party.
      *     responses:
      *       201:
-     *         description: Return the updated user.
+     *         description: Return the updated party.
      *       500:
      *         description: Server internal error.
      */
@@ -51,14 +51,14 @@ module.exports = (server) => {
 
     /**
      * @openapi
-     * /users/{userId}/delete:
+     * /parties/{partyId}/delete:
      *   delete:
      *     tags: [Parties]
-     *     summary: Delete an user
-     *     description: Delete an user.
+     *     summary: Delete a party
+     *     description: Delete a party.
      *     responses:
      *       201:
-     *         description: Return the deleted user.
+     *         description: Return the deleted party.
      *       500:
      *         description: Server internal error.
      */
@@ -67,14 +67,14 @@ module.exports = (server) => {
 
     /**
      * @openapi
-     * /users/create:
+     * /parties/create:
      *   post:
      *     tags: [Parties]
-     *     summary: Subscribe an user
-     *     description: Subscription for a new user. 
+     *     summary: Subscribe a party
+     *     description: Subscription for a new party. 
      *     responses:
      *       201:
-     *         description: Successfully created a new user.
+     *         description: Successfully created a new party.
      *       500:
      *         description: Server internal error.
      */

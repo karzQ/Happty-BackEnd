@@ -35,6 +35,22 @@ module.exports = (server) => {
 
     /**
      * @openapi
+     * /users/{userId}:
+     *   get:
+     *     tags: [Users]
+     *     summary: Get the current logged-in user
+     *     description: Get the current logged-in user
+     *     responses:
+     *       200:
+     *         description: Return the logged-in user.
+     *       500:
+     *         description: Server internal error.
+     */
+    server.route('/users/current')
+        .get(userController.get_current_user);
+
+    /**
+     * @openapi
      * /users/{userId}/update:
      *   put:
      *     tags: [Users]

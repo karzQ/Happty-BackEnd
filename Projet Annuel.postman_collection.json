@@ -1,0 +1,386 @@
+{
+	"info": {
+		"_postman_id": "72353ae5-47f0-4533-b240-1771b0dede3a",
+		"name": "Projet Annuel",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create a user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "firstname",
+									"value": "pierre",
+									"description": "String",
+									"type": "text"
+								},
+								{
+									"key": "lastname",
+									"value": "paul",
+									"description": "String",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "jack",
+									"description": "String",
+									"type": "text"
+								},
+								{
+									"key": "age",
+									"value": "21",
+									"description": "Number",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "test3@gmail.com",
+									"description": "String",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Root8**8",
+									"description": "String",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "0102030404",
+									"description": "String",
+									"type": "text"
+								},
+								{
+									"key": "profilePicturePath",
+									"value": "...",
+									"description": "String",
+									"type": "text"
+								},
+								{
+									"key": "role",
+									"value": "user",
+									"description": "Enum ['user', 'admin']",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:4000/users/create",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"users",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/users",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one user by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/users/:userID",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"users",
+								":userID"
+							],
+							"variable": [
+								{
+									"key": "userID",
+									"value": "60ff3b3bf58c8b91507ff671"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "karczinski.quentin@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Root8**8",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:4000/login",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a user",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZmYzYjNiZjU4YzhiOTE1MDdmZjY3MSIsImVtYWlsIjoia2FyY3ppbnNraS5xdWVudGluQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTYyNzMzOTY0OSwiZXhwIjoxNjI3NDI2MDQ5fQ.WUSEKNji_Q9ZINQXi8SkunHWnv4FPSN2q9X9dZpWNPM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "firstname",
+									"value": "Quentin",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:4000/users/:userID/update",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"users",
+								":userID",
+								"update"
+							],
+							"variable": [
+								{
+									"key": "userID",
+									"value": "60ff3b3bf58c8b91507ff671"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a user",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZmYzZjBiNTNhODIyN2JkYzhkYmFmNyIsImVtYWlsIjoidGVzdDFAZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjczNDA1ODMsImV4cCI6MTYyNzQyNjk4M30.w9JYmnt3yqtwnoZFTNr3i4cPPqHsnrGnGA-eVWcfGF4",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:4000/users/:userID/delete",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"users",
+								":userID",
+								"delete"
+							],
+							"variable": [
+								{
+									"key": "userID",
+									"value": "60ff3f0b53a8227bdc8dbaf7"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Notifications",
+			"item": []
+		},
+		{
+			"name": "Party",
+			"item": [
+				{
+					"name": "Get one party",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/parties/:partyId",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"parties",
+								":partyId"
+							],
+							"variable": [
+								{
+									"key": "partyId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all parties",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:4000/parties",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"parties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a party",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZmYzYjNiZjU4YzhiOTE1MDdmZjY3MSIsImVtYWlsIjoia2FyY3ppbnNraS5xdWVudGluQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTYyNzM0MzQyMywiZXhwIjoxNjI3NDI5ODIzfQ.QG2DtaHiGnr49IxIwuPFdKYsodoh_JJoGWXrqYcH_7M",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"hostId\": \"60ff3b3bf58c8b91507ff671\",\r\n\t\"name\": \"Test\",\r\n\t\"date\": 1627343283,\r\n\t\"location\": {\r\n\t\t\"x\": \"10\",\r\n\t\t\"y\": \"10\"\r\n\t},\r\n\t\"guestsList\": [\r\n\t\t\"60ff494d2f5f283fe0086813\",\r\n\t\t\"60ff49632f5f283fe008681a\",\r\n\t\t\"60ff49792f5f283fe0086821\"\r\n\t],\r\n\t\"tasksList\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/parties/create",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"parties",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a party",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/parties/:partyId/update",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"parties",
+								":partyId",
+								"update"
+							],
+							"variable": [
+								{
+									"key": "partyId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a party",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/parties/:partyId/delete",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"parties",
+								":partyId",
+								"delete"
+							],
+							"variable": [
+								{
+									"key": "partyId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

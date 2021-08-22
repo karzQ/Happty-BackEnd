@@ -59,10 +59,13 @@ exports.get_response_message = (type, objName, value) => {
       return `Invalid couple Email/Password`;
     case "invalid_password":
         return 'Invalid password';
+    case "invalid_email":
+        return 'This email not exist';
     case "invalid_password_format":
         return `Invalid format. Your password has to contains at minimum : ${value}`;
     case "invalid_email_format":
         return `Invalid format. Your email has to be like the following example: ${value}`;
+
 
     // GET
     case "get_one":
@@ -231,10 +234,11 @@ exports.capitalize = (str) => {
  */
 exports.decryptPassword = async (inputPassword, dbPassword) => {
     const value = await bcrypt.compare(inputPassword, dbPassword)
+    console.log({value})
     if (value === true) {
         return value;
     } else {
-        throw {type: 'compare_error'};
+        return false;
     }
 };
 
