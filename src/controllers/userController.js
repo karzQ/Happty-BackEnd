@@ -663,21 +663,21 @@ exports.signup = async (req, res) => {
     try {
         check_create_element({...req.body}, User, async () => {
             const password = await checkPasswordComplexity(req.body.password).catch(e => {
-                statusCode = 500;
+                statusCode = 409;
                 console.log({e})
                 json_response(req, res, statusCode, e, null, true);
                 return;
             });
 
             const email = await checkEmail(req.body.email.toLowerCase()).catch(e => {
-                statusCode = 500;
+                statusCode = 409;
                 console.log({e})
                 json_response(req, res, statusCode, e, null, true);
                 return;
             });
 
             const phone = await checkPhoneNumber(req.body.phone).catch(e => {
-                statusCode = 500;
+                statusCode = 409;
                 console.log({e})
                 json_response(req, res, statusCode, e, null, true);
                 return;
@@ -713,7 +713,7 @@ exports.signup = async (req, res) => {
                         newUser.save((error, cUser) => {
                             if (error) {
                                 if (error.code === 11000) {
-                                    statusCode = 500;
+                                    statusCode = 409;
                                     json_response(req, res, statusCode, { type: 'already_exist_property', objName: Object.keys(error.keyValue)[0] }, null, true);
                                     return;
                                 } else {
