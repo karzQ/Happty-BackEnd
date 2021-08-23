@@ -121,21 +121,21 @@ exports.get_response_message = (type, objName, value) => {
     case "unhandled_error":
       return `Unhandled Error at ${value}`;
     case "compare_error":
-        return `Error in hash comparison`;
+      return `Error in hash comparison`;
     case "invalid_token":
-        return "Invalid token";
+      return "Invalid token";
     case "invalid_format":
-        return `${objName} property don't have the right format`;
+      return `${objName} property don't have the right format`;
     case "provide_correct_value":
-        return `Please provide a correct ${objName}`;
+      return `Please provide a correct ${objName}`;
     case "upload_error":
-        return `An upload error has occured, please verify your file.`;
+      return `An upload error has occured, please verify your file.`;
     case "upload_multer_error":
-        return `A multer error has occured.`;
+      return `A multer error has occured.`;
     case "not_corresponding":
-        return `${objName} id does not corresponding with existing data or ${objName} doesn't exist.`;
+      return `${objName} id does not corresponding with existing data or ${objName} doesn't exist.`;
     case "already_exist_property":
-        return `This ${objName} is already used.`;
+      return `This ${objName} is already used.`;
 
     default:
       return `[Error] - ${type} isn't an available value.`;

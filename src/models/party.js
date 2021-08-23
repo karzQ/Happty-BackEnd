@@ -28,6 +28,10 @@ const partySchema = new Schema({
             y: {
                 type: String,
                 required: "An Y axis is required"
+            },
+            address: {
+                type: String,
+                required: "An address is required"
             }
         },
         required: 'A location is required'
