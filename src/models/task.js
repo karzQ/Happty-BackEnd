@@ -3,10 +3,6 @@ const uniqueValidator = require('mongoose-unique-validator');
 const Schema = mongoose.Schema;
 
 const taskSchema = new Schema({
-    type: {
-        type: String,
-        required: 'A type is required'
-    },
     content: {
         type: String,
         required: 'A content is required',
