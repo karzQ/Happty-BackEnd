@@ -142,8 +142,7 @@ exports.get_all_parties = (req, res) => {
                     statusCode = 500;
                     throw {type: 'server_error'};
                 } else if (parties.length === 0) {
-                    statusCode = 404;
-                    json_response(req, res, statusCode, {type: 'not_found', objName: 'Party'}, null, true);
+                    json_response(req, res, statusCode, {type: 'no_data', objName: 'Party'}, []);
                     return;
                 } else if (parties.length > 0) {
                     const partiesArr = [];
