@@ -2,6 +2,7 @@ const { json_response, check_create_element, check_get_one, check_update } = req
 const { verify_token } = require('../middlewares/jwtMiddleware');
 const Party = require('../models/party');
 const User = require('../models/user');
+const Task = require('../models/task');
 const { baseUrl: hostname, port } = require('./../config');
 
 require('dotenv').config();
