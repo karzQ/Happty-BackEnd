@@ -79,8 +79,8 @@ module.exports = (server) => {
      *       500:
      *         description: Server internal error.
      */
-    server.route('/users/:userId')
-        .get(userController.get_one_user);
+    server.route('/users/:searchValue')
+        .get(userController.get_users_by_properties);
 
     /**
      * @openapi

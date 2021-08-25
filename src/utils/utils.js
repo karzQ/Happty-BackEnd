@@ -136,6 +136,8 @@ exports.get_response_message = (type, objName, value) => {
       return `${objName} id does not corresponding with existing data or ${objName} doesn't exist.`;
     case "already_exist_property":
       return `This ${objName} is already used.`;
+    case "value_type_error":
+      return `Value type not valid`;
 
     default:
       return `[Error] - ${type} isn't an available value.`;
@@ -342,5 +344,17 @@ exports.checkEmail = async (email) => {
     throw {type: 'invalid_email_format', value: 'john.doe@gmail.com'}
   } else {
     throw {type: 'server_error'}
+  }
+}
+
+exports.checkSearchValue = async (value = '') => {
+  if (value.endsWith('#', value.length - 6)) {
+    return 'pseudo';
+  } else if (validator.isEmail(value)) {
+    return 'email';
+  } else if (validator.isMobilePhone(value)) {
+    return 'phone';
+  } else {
+    throw {type: 'value_type_error'};
   }
 }
