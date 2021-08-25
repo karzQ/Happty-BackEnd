@@ -72,6 +72,8 @@ exports.get_response_message = (type, objName, value) => {
       return `${objName} found`;
     case "get_many":
       return `${value} ${objName}s found`;
+    case "no_data":
+      return `You have no ${objName}`;
 
     // UPDATE
     case "update":
