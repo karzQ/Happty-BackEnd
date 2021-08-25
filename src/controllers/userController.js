@@ -20,6 +20,7 @@ const {
     checkPhoneNumber,
     checkPasswordComplexity,
     checkEmail,
+    checkSearchValue,
 } = require('../utils/utils');
 
 
@@ -28,6 +29,136 @@ exports.get_all_users = (req, res) => {
 
     try {
         User.find({}, (err, users) => {
+            if (err) {
+                statusCode = 500;
+                throw {type: 'server_error'};
+            } else {
+                const usersList = [];
+
+                users.forEach((user) => {
+                    const newObjUser = {
+                        _id: user._id,
+                        username: user.username,
+                        firstname: user.firstname,
+                        lastname: user.lastname,
+                        email: user.email,
+                        _options: {
+                            get: {
+                                method: 'GET',
+                                link: `http://${hostname}:${port}/users/${user._id}`,
+                            },
+                            update: {
+                                method: 'PUT',
+                                link: `http://${hostname}:${port}/users/${user._id}/update`,
+                                properties: {
+                                    role: {
+                                        type: 'Enum',
+                                        values: [
+                                            'user',
+                                            'admin'
+                                        ]
+                                    },
+                                    firstname: {
+                                        type: 'String'
+                                    },
+                                    lastname: {
+                                        type: 'String'
+                                    },
+                                    username: {
+                                        type: 'String'
+                                    },
+                                    age: {
+                                        type: 'Number'
+                                    },
+                                    email: {
+                                        type: 'String'
+                                    },
+                                    password: {
+                                        type: 'String'
+                                    },
+                                    profileImage: {
+                                        type: 'String'
+                                    },
+                                    phone: {
+                                        type: 'Number'
+                                    },
+                                },
+                            },
+                            delete: {
+                                method: 'DELETE',
+                                link: `http://${hostname}:${port}/users/${user._id}/delete`,
+                            },
+                        },
+                    };
+                    usersList.push({ ...newObjUser });
+                });
+
+                const obj = {
+                    ...usersList,
+                    _options: {
+                        create: {
+                            method: 'POST',
+                            link: `http://${hostname}:${port}/users/create`,
+                            properties: {
+                                role: {
+                                    type: 'Enum',
+                                    values: [
+                                        'user',
+                                        'admin'
+                                    ]
+                                },
+                                firstname: {
+                                    type: 'String'
+                                },
+                                lastname: {
+                                    type: 'String'
+                                },
+                                username: {
+                                    type: 'String'
+                                },
+                                age: {
+                                    type: 'Number'
+                                },
+                                email: {
+                                    type: 'String'
+                                },
+                                password: {
+                                    type: 'String'
+                                },
+                                profileImage: {
+                                    type: 'String'
+                                },
+                                phone: {
+                                    type: 'Number'
+                                },
+                            },
+                        },
+                    },
+                };
+                json_response(
+                    req,
+                    res,
+                    statusCode,
+                    {type: 'get_many', objName: 'user', value: usersList.length},
+                    obj
+                );
+                return;
+            }
+        });
+    } catch (err) {
+        console.log(err);
+        json_response(req, res, statusCode, err, null, true);
+        return;
+    }
+};
+
+exports.get_users_by_properties = (req, res) => {
+    let statusCode = 200;
+    const {searchValue} = req.params;
+
+    try {
+        const property = checkSearchValue(searchValue);
+        User.find({[property]: searchValue}, (err, users) => {
             if (err) {
                 statusCode = 500;
                 throw {type: 'server_error'};
@@ -271,116 +402,116 @@ exports.get_current_user = async (req, res) => {
     }
 };
 
-exports.get_one_user = (req, res) => {
-    let statusCode = 200;
-    // console.log({req})
-    try {
-        check_get_one(req, 'userId', () => {
-            User.findOne({ _id: req.params.userId }, (err, user) => {
-                if (err) {
-                    statusCode = 500;
-                    throw {type: 'server_error'};
-                } else if (user) {
-                    const data = {
-                       ...user._doc,
-                        _options: {
-                            create: {
-                                method: 'POST',
-                                link: `http://${hostname}:${port}/users/create`,
-                                properties: {
-                                    role: {
-                                        type: 'Enum',
-                                        values: [
-                                            'user',
-                                            'admin'
-                                        ]
-                                    },
-                                    firstname: {
-                                        type: 'String'
-                                    },
-                                    lastname: {
-                                        type: 'String'
-                                    },
-                                    username: {
-                                        type: 'String'
-                                    },
-                                    age: {
-                                        type: 'Number'
-                                    },
-                                    email: {
-                                        type: 'String'
-                                    },
-                                    password: {
-                                        type: 'String'
-                                    },
-                                    profileImage: {
-                                        type: 'String'
-                                    },
-                                    phone: {
-                                        type: 'Number'
-                                    },
-                                },
-                            },
-                            update: {
-                                method: 'PUT',
-                                link: `http://${hostname}:${port}/users/${user._id}/update`,
-                                properties: {
-                                    role: {
-                                        type: 'Enum',
-                                        values: [
-                                            'user',
-                                            'admin'
-                                        ]
-                                    },
-                                    firstname: {
-                                        type: 'String'
-                                    },
-                                    lastname: {
-                                        type: 'String'
-                                    },
-                                    username: {
-                                        type: 'String'
-                                    },
-                                    age: {
-                                        type: 'Number'
-                                    },
-                                    email: {
-                                        type: 'String'
-                                    },
-                                    password: {
-                                        type: 'String'
-                                    },
-                                    profileImage: {
-                                        type: 'String'
-                                    },
-                                    phone: {
-                                        type: 'Number'
-                                    },
-                                },
-                            },
-                            delete: {
-                                method: 'DELETE',
-                                link: `http://${hostname}:${port}/users/${user._id}/delete`,
-                            },
-                        },
-                    };
-                    json_response(
-                        req,
-                        res,
-                        statusCode,
-                        {type: 'get_one', objName: 'User'},
-                        data
-                    );
-                } else {
-                    statusCode = 404;
-                    throw {type: 'not_found', objName: 'User'}
-                }
-            });
-        });
-    } catch (err) {
-        json_response(req, res, statusCode, err, null, true);
-    }
-};
+// exports.get_users_by_properties = (req, res) => {
+//     let statusCode = 200;
+//     // console.log({req})
+//     try {
+//         check_get_one(req, 'userId', () => {
+//             User.findOne({ _id: req.params.userId }, (err, user) => {
+//                 if (err) {
+//                     statusCode = 500;
+//                     throw {type: 'server_error'};
+//                 } else if (user) {
+//                     const data = {
+//                        ...user._doc,
+//                         _options: {
+//                             create: {
+//                                 method: 'POST',
+//                                 link: `http://${hostname}:${port}/users/create`,
+//                                 properties: {
+//                                     role: {
+//                                         type: 'Enum',
+//                                         values: [
+//                                             'user',
+//                                             'admin'
+//                                         ]
+//                                     },
+//                                     firstname: {
+//                                         type: 'String'
+//                                     },
+//                                     lastname: {
+//                                         type: 'String'
+//                                     },
+//                                     username: {
+//                                         type: 'String'
+//                                     },
+//                                     age: {
+//                                         type: 'Number'
+//                                     },
+//                                     email: {
+//                                         type: 'String'
+//                                     },
+//                                     password: {
+//                                         type: 'String'
+//                                     },
+//                                     profileImage: {
+//                                         type: 'String'
+//                                     },
+//                                     phone: {
+//                                         type: 'Number'
+//                                     },
+//                                 },
+//                             },
+//                             update: {
+//                                 method: 'PUT',
+//                                 link: `http://${hostname}:${port}/users/${user._id}/update`,
+//                                 properties: {
+//                                     role: {
+//                                         type: 'Enum',
+//                                         values: [
+//                                             'user',
+//                                             'admin'
+//                                         ]
+//                                     },
+//                                     firstname: {
+//                                         type: 'String'
+//                                     },
+//                                     lastname: {
+//                                         type: 'String'
+//                                     },
+//                                     username: {
+//                                         type: 'String'
+//                                     },
+//                                     age: {
+//                                         type: 'Number'
+//                                     },
+//                                     email: {
+//                                         type: 'String'
+//                                     },
+//                                     password: {
+//                                         type: 'String'
+//                                     },
+//                                     profileImage: {
+//                                         type: 'String'
+//                                     },
+//                                     phone: {
+//                                         type: 'Number'
+//                                     },
+//                                 },
+//                             },
+//                             delete: {
+//                                 method: 'DELETE',
+//                                 link: `http://${hostname}:${port}/users/${user._id}/delete`,
+//                             },
+//                         },
+//                     };
+//                     json_response(
+//                         req,
+//                         res,
+//                         statusCode,
+//                         {type: 'get_one', objName: 'User'},
+//                         data
+//                     );
+//                 } else {
+//                     statusCode = 404;
+//                     throw {type: 'not_found', objName: 'User'}
+//                 }
+//             });
+//         });
+//     } catch (err) {
+//         json_response(req, res, statusCode, err, null, true);
+//     }
+// };
 
 exports.update_one_user = (req, res) => {
     let statusCode = 200;
