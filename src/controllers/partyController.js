@@ -305,7 +305,6 @@ exports.create_party = (req, res) => {
                 let tasksArr = [];
                 if (tasksList.length > 0) {
                     tasksList.forEach(task => {
-                        delete task._doc._id;
                         tasksArr.push(new Task({
                             ...task._doc
                         }));
