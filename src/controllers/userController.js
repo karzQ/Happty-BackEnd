@@ -157,9 +157,6 @@ exports.get_users_by_properties = (req, res) => {
     const {searchValue} = req.params;
     const value = decodeURI(searchValue);
 
-    console.log({searchValue})
-    console.log({value})
-
     try {
         const property = checkSearchValue(value);
         User.find({[property]: value}, (err, users) => {
