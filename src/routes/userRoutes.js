@@ -39,7 +39,7 @@ module.exports = (server) => {
      * /users:
      *   get:
      *     tags: [Users]
-     *     summary: Get all users
+     *     summary: Get all users - [Deprecated]
      *     description: Get all users in the collection
      *     responses:
      *       200:
@@ -47,8 +47,8 @@ module.exports = (server) => {
      *       500:
      *         description: Server internal error.
      */
-    server.route('/users')
-        .get(userController.get_all_users);
+    /* server.route('/users')
+        .get(userController.get_all_users); */
 
     /**
      * @openapi
