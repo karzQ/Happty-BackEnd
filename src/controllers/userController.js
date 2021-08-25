@@ -24,7 +24,7 @@ const {
 } = require('../utils/utils');
 
 
-exports.get_all_users = (req, res) => {
+/* exports.get_all_users = (req, res) => {
     let statusCode = 200;
 
     try {
@@ -150,15 +150,19 @@ exports.get_all_users = (req, res) => {
         json_response(req, res, statusCode, err, null, true);
         return;
     }
-};
+}; */
 
 exports.get_users_by_properties = (req, res) => {
     let statusCode = 200;
     const {searchValue} = req.params;
+    const value = decodeURI(searchValue);
+
+    console.log({searchValue})
+    console.log({value})
 
     try {
-        const property = checkSearchValue(searchValue);
-        User.find({[property]: searchValue}, (err, users) => {
+        const property = checkSearchValue(value);
+        User.find({[property]: value}, (err, users) => {
             if (err) {
                 statusCode = 500;
                 throw {type: 'server_error'};

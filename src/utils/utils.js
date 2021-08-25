@@ -351,7 +351,7 @@ exports.checkEmail = async (email) => {
 
 exports.checkSearchValue = (value = '') => {
   if (value.endsWith('#', value.length - 6)) {
-    return 'pseudo';
+    return 'username';
   } else if (validator.isEmail(value)) {
     return 'email';
   } else if (validator.isMobilePhone(value)) {
