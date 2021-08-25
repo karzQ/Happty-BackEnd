@@ -159,7 +159,7 @@ exports.get_users_by_properties = (req, res) => {
 
     try {
         const property = checkSearchValue(value);
-        User.find({[property]: value}, (err, users) => {
+        User.find({[property]: {$regex: value, $options: 'i'}}, (err, users) => {
             if (err) {
                 statusCode = 500;
                 throw {type: 'server_error'};
