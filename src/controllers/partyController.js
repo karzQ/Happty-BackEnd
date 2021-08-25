@@ -307,7 +307,7 @@ exports.create_party = (req, res) => {
                 if (tasksList.length > 0) {
                     tasksList.forEach(task => {
                         tasksArr.push(new Task({
-                            ...task._doc
+                            ...task
                         }));
                         console.log({task});
                     })
