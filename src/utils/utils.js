@@ -349,7 +349,7 @@ exports.checkEmail = async (email) => {
   }
 }
 
-exports.checkSearchValue = async (value = '') => {
+exports.checkSearchValue = (value = '') => {
   if (value.endsWith('#', value.length - 6)) {
     return 'pseudo';
   } else if (validator.isEmail(value)) {

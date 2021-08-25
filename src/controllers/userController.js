@@ -20,6 +20,7 @@ const {
     checkPhoneNumber,
     checkPasswordComplexity,
     checkEmail,
+    checkSearchValue,
 } = require('../utils/utils');
 
 
@@ -153,7 +154,7 @@ exports.get_all_users = (req, res) => {
 
 exports.get_users_by_properties = (req, res) => {
     let statusCode = 200;
-    const {searchValue} = req.param;
+    const {searchValue} = req.params;
 
     try {
         const property = checkSearchValue(searchValue);
