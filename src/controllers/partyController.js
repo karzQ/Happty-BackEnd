@@ -326,7 +326,8 @@ exports.create_party = (req, res) => {
                         throw {type: 'not_corresponding', objName: 'User'};
 
                     } else if (users.length > 0) {
-                        
+
+                        console.log("Body :", req.body)
                         const newParty = new Party({
                             hostId: payload.userId,
                             name,
@@ -335,6 +336,7 @@ exports.create_party = (req, res) => {
                             tasksList: tasksArr,
                             guestsList,
                         });
+                        console.log("party :", newParty._doc)
         
                         newParty.save((error, cParty) => {
                             if (error) {
