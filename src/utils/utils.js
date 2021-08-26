@@ -2,6 +2,7 @@ const { port, baseUrl: hostname } = require("../config");
 const bcrypt = require('bcrypt');
 const validator = require('validator');
 const multer = require('multer');
+const { isValidObjectId } = require("mongoose");
 
 exports.get_request_path = (req) => {
   return `http://${hostname}:${port}${req.url}`;
@@ -19,7 +20,6 @@ exports.get_request_path = (req) => {
  * @return {void}
  */
 exports.json_response = (req, res, statusCode, objMessage = { type, objName: null, value: null }, data, showRequest = false) => {
-  // console.log({objMessage});
   const { type, objName, value } = objMessage;
   const obj = {
     statusCode,
@@ -28,9 +28,6 @@ exports.json_response = (req, res, statusCode, objMessage = { type, objName: nul
     data,
     request: this.get_request_path(req),
   };
-
-  // console.log({obj});
-
   !showRequest && delete obj.request;
 
   res.status(statusCode).json({
@@ -46,11 +43,9 @@ exports.json_response = (req, res, statusCode, objMessage = { type, objName: nul
  * Any contextual value, but only primitives.
  * @return {string}
  * The message.
- */
+ */ 
 exports.get_response_message = (type, objName, value) => {
-
   console.log({type, objName, value})
-
   switch (type) {
     // LOGIN
     case "success_login":
@@ -157,7 +152,6 @@ exports.get_response_message = (type, objName, value) => {
  * @return {void} Nothing
  */
 exports.check_update = (req, identifierName = null, next) => {
-    console.log(req.params)
     if (req.params[`${identifierName}`].length !== 24) {
         throw { type: "wrong_id_format" };
     } else if (Object.keys(req.body).length < 1) {
@@ -237,8 +231,7 @@ exports.capitalize = (str) => {
  * @return {boolean} Return the boolean value of comparison between the client password and the db-hashed password.
  */
 exports.decryptPassword = async (inputPassword, dbPassword) => {
-    const value = await bcrypt.compare(inputPassword, dbPassword)
-    console.log({value})
+    const value = await bcrypt.compare(inputPassword, dbPassword);
     if (value === true) {
         return value;
     } else {
@@ -253,13 +246,9 @@ exports.getDocumentsCount = (model) => {
       if (err) {
         throw `An error has occurred while counting ${model.name} collection`;
       } else {
-        /* if (count === 0) {
-          this.getDocumentsCount(model);
-        } */
         modelCount = count;
       }
     });
-    // console.log({ modelCount });
     return modelCount + 1;
   } catch (err) {
     console.log(err);
@@ -267,7 +256,6 @@ exports.getDocumentsCount = (model) => {
 };
 
 exports.formatUsername = (username, usersCount) => {
-//   console.log({ usersCount });
   let uniqueIdentifier = `${usersCount}`;
   while (uniqueIdentifier.length < 6) {
     uniqueIdentifier = "0" + uniqueIdentifier;
@@ -350,12 +338,16 @@ exports.checkEmail = async (email) => {
 }
 
 exports.checkSearchValue = (value = '') => {
-  if (value.endsWith('#', value.length - 6)) {
-    return 'username';
+  console.log({value})
+  if (isValidObjectId(value)) {
+    console.log('hello')
+    return '_id';
   } else if (validator.isEmail(value)) {
     return 'email';
   } else if (validator.isMobilePhone(value)) {
     return 'phone';
+  } else if (value.endsWith('#', value.length - 6)) {
+    return 'username';
   } else {
     throw {type: 'value_type_error'};
   }

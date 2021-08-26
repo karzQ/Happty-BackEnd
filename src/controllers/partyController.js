@@ -15,7 +15,7 @@ exports.get_one_party = (req, res) => {
     try {
         check_get_one(req, 'partyId', () => {
             verify_token(req, res, false, async(payload) => {
-                Party.find({_id: partyId, userId: payload.userId}, (err, party) => {
+                Party.find({_id: partyId, hostId: payload.userId}, (err, party) => {
                     if (err) {
                         statusCode = 500;
                         throw {type: 'server_error'};
@@ -281,6 +281,7 @@ exports.get_all_parties = (req, res) => {
                             }
                         }
                     }
+                    
                     json_response(req, res, statusCode, {type: 'get_many', objName: 'Party', value: partiesArr.length}, {...obj});
                     return;
 
